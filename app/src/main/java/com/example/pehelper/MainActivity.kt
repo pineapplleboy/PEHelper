@@ -12,16 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.pehelper.presentation.screen.AuthScreen
 import com.example.pehelper.presentation.screen.ProfileScreen
+import com.example.pehelper.presentation.screen.SplashScreen
 import com.example.pehelper.ui.theme.PEHelperTheme
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,25 +26,16 @@ class MainActivity : ComponentActivity() {
             PEHelperTheme {
                 val navController = rememberNavController()
                 Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    bottomBar = {
-                        BottomAppBar {
-                            IconButton(onClick = { navController.navigate("auth") }) {
-                                Icon(Icons.Default.AccountCircle, contentDescription = "Auth")
-                            }
-                            IconButton(onClick = { navController.navigate("profile") }) {
-                                Icon(Icons.Default.AccountCircle, contentDescription = "Profile")
-                            }
-                        }
-                    }
+                    modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "auth",
+                        startDestination = "splash",
                         modifier = Modifier.fillMaxSize().padding(innerPadding)
                     ) {
-                        composable("auth") { AuthScreen() }
-                        composable("profile") { ProfileScreen() }
+                        composable("splash") { SplashScreen(navController = navController) }
+                        composable("auth") { AuthScreen(navController = navController) }
+                        composable("profile") { ProfileScreen(navController = navController) }
                     }
                 }
             }
@@ -61,6 +47,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun DefaultPreview() {
     PEHelperTheme {
-        AuthScreen()
+        SplashScreen(rememberNavController())
     }
 }

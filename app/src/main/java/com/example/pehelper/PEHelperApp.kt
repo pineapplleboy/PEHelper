@@ -2,6 +2,7 @@ package com.example.pehelper
 
 import android.app.Application
 import com.example.pehelper.data.network.networkModule
+import com.example.pehelper.presentation.di.storageModule
 import com.example.pehelper.presentation.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -11,7 +12,7 @@ class PEHelperApp : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@PEHelperApp)
-            modules(networkModule, viewModelModule)
+            modules(networkModule, viewModelModule, storageModule)
         }
     }
 } 

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">PEHelper</string>
+    <string name="login">Логин</string>
+    <string name="enter_for_access">Войдите для доступа в аккаунт</string>
+    <string name="email">Email</string>
+    <string name="password">Пароль</string>
+    <string name="next"><![CDATA[Далее]]></string>
 </resources>
