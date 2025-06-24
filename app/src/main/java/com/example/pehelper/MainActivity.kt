@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Login
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
                     bottomBar = {
                         BottomAppBar {
                             IconButton(onClick = { navController.navigate("auth") }) {
-                                Icon(Icons.Default.Login, contentDescription = "Auth")
+                                Icon(Icons.Default.AccountCircle, contentDescription = "Auth")
                             }
                             IconButton(onClick = { navController.navigate("profile") }) {
                                 Icon(Icons.Default.AccountCircle, contentDescription = "Profile")
@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
                     NavHost(
                         navController = navController,
                         startDestination = "auth",
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize().padding(innerPadding)
                     ) {
                         composable("auth") { AuthScreen() }
                         composable("profile") { ProfileScreen() }
@@ -61,7 +61,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun DefaultPreview() {
     PEHelperTheme {
-        // Можно показать AuthScreen или ProfileScreen для предпросмотра
         AuthScreen()
     }
 }
