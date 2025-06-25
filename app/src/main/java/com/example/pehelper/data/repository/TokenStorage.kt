@@ -15,6 +15,10 @@ class TokenStorage(context: Context) {
         get() = prefs.getString(REFRESH_TOKEN_KEY, null)
         set(value) = prefs.edit().putString(REFRESH_TOKEN_KEY, value).apply()
 
+    var role: String?
+        get() = prefs.getString(ROLE_KEY, null)
+        set(value) = prefs.edit().putString(ROLE_KEY, value).apply()
+
     fun clearTokens() {
         prefs.edit().clear().apply()
     }
@@ -23,5 +27,6 @@ class TokenStorage(context: Context) {
         private const val PREFS_NAME = "auth_prefs"
         private const val ACCESS_TOKEN_KEY = "access_token"
         private const val REFRESH_TOKEN_KEY = "refresh_token"
+        private const val ROLE_KEY = "role"
     }
 } 

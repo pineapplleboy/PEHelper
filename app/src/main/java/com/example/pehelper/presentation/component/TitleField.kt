@@ -9,13 +9,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -27,23 +21,17 @@ fun TitleField(
     accessText: String,
     modifier: Modifier = Modifier
 ) {
-    var columnHeight by remember { mutableStateOf(0.dp) }
-    val density = LocalDensity.current
-
     Row(modifier = modifier.padding(horizontal = 24.dp)) {
         Image(
             painter = painterResource(R.drawable.tsu_icon),
             contentDescription = null,
             modifier = Modifier
-                .width(columnHeight)
-                .height(columnHeight)
+                .width(48.dp)
+                .height(48.dp)
         )
         Column(
             modifier = Modifier
                 .weight(1f)
-                .onSizeChanged { size ->
-                    columnHeight = with(density) { size.height.toDp() }
-                }
                 .padding(start = 8.dp)
         ) {
             Text(

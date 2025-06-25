@@ -1,5 +1,6 @@
 package com.example.pehelper.presentation.screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,18 +25,27 @@ fun SplashScreen(
     }
 
     LaunchedEffect(state) {
-        when (state) {
-            is AuthState.Success -> {
-                navController.navigate("profile") {
-                    popUpTo("splash") { inclusive = true }
-                }
+        val currentState = state
+        if (currentState is AuthState.Success) {
+            val route = when (currentState.role) {
+                "Student" -> "student_profile"
+                "Curator" -> "curator_profile"
+                "Teacher" -> "profile"
+                "SportsOrganizer" -> "sports_organizer_profile"
+                else -> "auth"
             }
-            is AuthState.Error -> {
-                navController.navigate("auth") {
-                    popUpTo("splash") { inclusive = true }
-                }
+            Log.d(
+                "SplashScreen",
+                "State is Success. Role: ${currentState.role}. Navigating to: $route"
+            )
+            navController.navigate(route) {
+                popUpTo("splash") { inclusive = true }
             }
-            else -> {}
+        } else if (currentState is AuthState.Error) {
+            Log.d("SplashScreen", "State is Error. Navigating to auth.")
+            navController.navigate("auth") {
+                popUpTo("splash") { inclusive = true }
+            }
         }
     }
 

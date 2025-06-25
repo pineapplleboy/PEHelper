@@ -2,6 +2,8 @@ package com.example.pehelper.presentation.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.pehelper.data.model.CuratorProfileModel
+import com.example.pehelper.data.model.StudentProfileModel
 import com.example.pehelper.data.model.TeacherProfileModel
 import com.example.pehelper.data.network.PEAPI
 import com.example.pehelper.data.repository.TokenStorage
@@ -15,9 +17,11 @@ import org.koin.core.component.inject
 
 
 sealed class ProfileState {
-    data object Idle : ProfileState()
-    data object Loading : ProfileState()
-    data class Success(val profile: TeacherProfileModel) : ProfileState()
+    object Idle : ProfileState()
+    object Loading : ProfileState()
+    data class SuccessTeacher(val profile: TeacherProfileModel) : ProfileState()
+    data class SuccessStudent(val profile: StudentProfileModel) : ProfileState()
+    data class SuccessCurator(val profile: CuratorProfileModel) : ProfileState()
     data class Error(val error: String) : ProfileState()
 }
 
@@ -35,10 +39,47 @@ class ProfileViewModel : ViewModel(), KoinComponent {
             try {
                 val response = api.getTeacherProfile()
                 if (response.isSuccessful && response.body() != null) {
-                    _profileState.value = ProfileState.Success(response.body()!!)
+                    _profileState.value = ProfileState.SuccessTeacher(response.body()!!)
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    _profileState.value = ProfileState.Error(parseError(errorBody) ?: "Unknown error")
+                    _profileState.value =
+                        ProfileState.Error(parseError(errorBody) ?: "Unknown error")
+                }
+            } catch (e: Exception) {
+                _profileState.value = ProfileState.Error(e.localizedMessage ?: "Unknown error")
+            }
+        }
+    }
+
+    fun getStudentProfile() {
+        viewModelScope.launch {
+            _profileState.value = ProfileState.Loading
+            try {
+                val response = api.getStudentProfile()
+                if (response.isSuccessful && response.body() != null) {
+                    _profileState.value = ProfileState.SuccessStudent(response.body()!!)
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    _profileState.value =
+                        ProfileState.Error(parseError(errorBody) ?: "Unknown error")
+                }
+            } catch (e: Exception) {
+                _profileState.value = ProfileState.Error(e.localizedMessage ?: "Unknown error")
+            }
+        }
+    }
+
+    fun getCuratorProfile() {
+        viewModelScope.launch {
+            _profileState.value = ProfileState.Loading
+            try {
+                val response = api.getCuratorProfile()
+                if (response.isSuccessful && response.body() != null) {
+                    _profileState.value = ProfileState.SuccessCurator(response.body()!!)
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    _profileState.value =
+                        ProfileState.Error(parseError(errorBody) ?: "Unknown error")
                 }
             } catch (e: Exception) {
                 _profileState.value = ProfileState.Error(e.localizedMessage ?: "Unknown error")
@@ -48,7 +89,10 @@ class ProfileViewModel : ViewModel(), KoinComponent {
 
     private fun parseError(errorBody: String?): String? {
         return try {
-            val err = Gson().fromJson(errorBody, com.example.pehelper.data.model.ErrorResponse::class.java)
+            val err = Gson().fromJson(
+                errorBody,
+                com.example.pehelper.data.model.ErrorResponse::class.java
+            )
             when {
                 !err.title.isNullOrBlank() && !err.detail.isNullOrBlank() -> err.title + "\n" + err.detail
                 !err.detail.isNullOrBlank() -> err.detail
@@ -56,6 +100,7 @@ class ProfileViewModel : ViewModel(), KoinComponent {
                     val firstMsg = err.errors.entries.firstOrNull()?.value?.firstOrNull()
                     if (firstMsg != null) err.title + "\n" + firstMsg else err.title
                 }
+
                 !err.title.isNullOrBlank() -> err.title
                 !err.message.isNullOrBlank() -> err.message
                 else -> errorBody

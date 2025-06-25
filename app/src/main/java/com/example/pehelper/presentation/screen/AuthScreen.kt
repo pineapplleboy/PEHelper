@@ -84,13 +84,35 @@ fun AuthScreen(
                 currentState.error,
                 color = MaterialTheme.colorScheme.error
             )
+
             is AuthState.Success -> {
-                LaunchedEffect(Unit) {
-                    navController.navigate("profile") {
-                        popUpTo("auth") { inclusive = true }
+                LaunchedEffect(currentState) {
+                    when (currentState.role) {
+                        "Student" -> navController.navigate("student_profile") {
+                            popUpTo("auth") { inclusive = true }
+                        }
+
+                        "Curator" -> navController.navigate("curator_profile") {
+                            popUpTo("auth") { inclusive = true }
+                        }
+
+                        "Teacher" -> navController.navigate("profile") {
+                            popUpTo("auth") { inclusive = true }
+                        }
+
+                        "SportsOrganizer" -> navController.navigate("sports_organizer_profile") {
+                            popUpTo("auth") { inclusive = true }
+                        }
+
+                        else -> {
+                            navController.navigate("auth") {
+                                popUpTo("auth") { inclusive = true }
+                            }
+                        }
                     }
                 }
             }
+
             else -> {}
         }
     }
