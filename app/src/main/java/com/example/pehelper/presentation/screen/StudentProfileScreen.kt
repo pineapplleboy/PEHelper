@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.pehelper.R
@@ -110,22 +111,22 @@ fun StudentProfileContent(profile: StudentProfileModel, onLogout: () -> Unit) {
         }
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "Профиль студента",
+            text = stringResource(R.string.profile_student_title),
             style = MaterialTheme.typography.titleLarge
         )
         Text(
-            text = "Информация о вашей учётной записи",
+            text = stringResource(R.string.profile_access),
             style = MaterialTheme.typography.labelSmall,
             color = Color.Gray
         )
         Spacer(modifier = Modifier.height(32.dp))
-        ProfileInfoBlock(label = "ФИО", value = profile.fullName)
-        ProfileInfoBlock(label = "Email", value = profile.email)
-        ProfileInfoBlock(label = "Факультет", value = profile.faculty?.name)
-        ProfileInfoBlock(label = "Курс", value = profile.course?.toString())
-        ProfileInfoBlock(label = "Группа", value = profile.group)
-        ProfileInfoBlock(label = "Количество занятий", value = profile.classesAmount?.toString())
+        ProfileInfoBlock(label = stringResource(R.string.full_name), value = profile.fullName)
+        ProfileInfoBlock(label = stringResource(R.string.email), value = profile.email)
+        ProfileInfoBlock(label = stringResource(R.string.faculty), value = profile.faculty?.name)
+        ProfileInfoBlock(label = stringResource(R.string.course), value = profile.course?.toString())
+        ProfileInfoBlock(label = stringResource(R.string.group), value = profile.group)
+        ProfileInfoBlock(label = stringResource(R.string.classes_amount), value = profile.classesAmount?.toString())
         Spacer(modifier = Modifier.height(32.dp))
-        AppButton(text = "Выйти", onClick = onLogout)
+        AppButton(text = stringResource(R.string.logout), onClick = onLogout)
     }
 } 

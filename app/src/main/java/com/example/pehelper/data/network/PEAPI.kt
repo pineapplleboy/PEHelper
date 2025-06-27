@@ -6,9 +6,16 @@ import com.example.pehelper.data.model.LoginUserModel
 import com.example.pehelper.data.model.RefreshTokenModel
 import com.example.pehelper.data.model.StudentProfileModel
 import com.example.pehelper.data.model.TeacherProfileModel
+import com.example.pehelper.data.model.CreateSportsEventRequest
+import com.example.pehelper.data.model.SportsEventModel
+import com.example.pehelper.data.model.SportsEventsResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.DELETE
+import retrofit2.http.Path
+import retrofit2.http.PUT
+import retrofit2.http.Query
 
 interface PEAPI {
     @POST("/api/login")
@@ -31,6 +38,25 @@ interface PEAPI {
 
     @GET("/api/session")
     suspend fun getSession(): retrofit2.Response<SessionResponse>
+
+    @POST("/api/sports/events")
+    suspend fun createSportsEvent(@Body request: CreateSportsEventRequest)
+
+    @GET("/api/sports/events")
+    suspend fun getSportsEvents(): SportsEventsResponse
+
+    @GET("/api/sports/events/{id}")
+    suspend fun getSportsEventById(@Path("id") id: String): SportsEventModel
+
+    @DELETE("/api/sports/events/{id}")
+    suspend fun deleteSportsEvent(@Path("id") id: String)
+
+    @PUT("/api/sports/events/{id}/application")
+    suspend fun updateAttendanceStatus(
+        @Path("id") eventId: String,
+        @Query("userId") userId: String,
+        @Query("status") status: String
+    )
 }
 
 data class SessionResponse(

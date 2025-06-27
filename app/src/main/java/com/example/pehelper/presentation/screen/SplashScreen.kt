@@ -31,7 +31,7 @@ fun SplashScreen(
                 "Student" -> "student_profile"
                 "Curator" -> "curator_profile"
                 "Teacher" -> "profile"
-                "SportsOrganizer" -> "sports_organizer_profile"
+                "SportsOrganizer" -> "sports_events"
                 else -> "auth"
             }
             Log.d(

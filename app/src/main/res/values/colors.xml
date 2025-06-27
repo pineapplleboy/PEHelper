@@ -14,4 +14,7 @@
     <color name="yellow">#FFD739</color>
     <color name="green">#69FF1E</color>
     <color name="light_black">#FF252525</color>
+    <color name="status_accepted">#4CAF50</color>
+    <color name="status_declined">#E94057</color>
+    <color name="status_pending">#808080</color>
 </resources>

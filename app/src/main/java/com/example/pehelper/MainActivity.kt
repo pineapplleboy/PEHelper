@@ -1,9 +1,11 @@
 package com.example.pehelper
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -19,9 +21,13 @@ import com.example.pehelper.presentation.screen.ProfileScreen
 import com.example.pehelper.presentation.screen.SplashScreen
 import com.example.pehelper.presentation.screen.SportsOrganizerProfileScreen
 import com.example.pehelper.presentation.screen.StudentProfileScreen
+import com.example.pehelper.presentation.screen.SportsEventsScreen
+import com.example.pehelper.presentation.screen.CreateSportsEventScreen
+import com.example.pehelper.presentation.screen.SportsEventDetailScreen
 import com.example.pehelper.ui.theme.PEHelperTheme
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -46,6 +52,31 @@ class MainActivity : ComponentActivity() {
                         composable("sports_organizer_profile") {
                             SportsOrganizerProfileScreen(
                                 navController = navController
+                            )
+                        }
+                        composable("sports_events") {
+                            SportsEventsScreen(
+                                onCreateEventClick = { navController.navigate("create_sports_event") },
+                                onProfileClick = {
+                                    navController.navigate("sports_organizer_profile")
+                                },
+                                navController = navController
+                            )
+                        }
+                        composable("create_sports_event") {
+                            CreateSportsEventScreen(
+                                onCreateClick = { navController.popBackStack() },
+                                onBack = { navController.popBackStack() }
+                            )
+                        }
+                        composable("sports_event_detail/{eventId}") { backStackEntry ->
+                            val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
+                            SportsEventDetailScreen(
+                                eventId = eventId,
+                                onBack = { navController.popBackStack() },
+                                onDeleted = {
+                                    navController.popBackStack("sports_events", false)
+                                }
                             )
                         }
                     }

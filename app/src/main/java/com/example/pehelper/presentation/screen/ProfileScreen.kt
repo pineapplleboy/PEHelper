@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.pehelper.R
@@ -50,6 +54,16 @@ fun ProfileScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
+        IconButton(
+            onClick = { navController.popBackStack() },
+            modifier = Modifier.align(Alignment.TopStart)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.back_arrow_ic),
+                contentDescription = stringResource(id = R.string.back),
+                tint = colorResource(id = R.color.red)
+            )
+        }
         when (val currentState = state) {
             is ProfileState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -103,18 +117,18 @@ fun ProfileContent(profile: TeacherProfileModel, onLogout: () -> Unit) {
         verticalArrangement = Arrangement.Top
     ) {
         TitleField(
-            loginText = "Профиль преподавателя",
-            accessText = "Информация о вашей учётной записи",
+            loginText = stringResource(R.string.profile_teacher_title),
+            accessText = stringResource(R.string.profile_teacher_access),
             modifier = Modifier.padding(top = 0.dp, bottom = 0.dp)
         )
         Spacer(modifier = Modifier.height(32.dp))
-        ProfileInfoBlock(label = "ФИО", value = profile.fullName)
-        ProfileInfoBlock(label = "Email", value = profile.email)
+        ProfileInfoBlock(label = stringResource(R.string.full_name), value = profile.fullName)
+        ProfileInfoBlock(label = stringResource(R.string.email), value = profile.email)
         if (!profile.subjects.isNullOrEmpty()) {
             SubjectsBlock(subjects = profile.subjects)
         }
         Spacer(modifier = Modifier.height(32.dp))
-        AppButton(text = "Выйти", onClick = onLogout)
+        AppButton(text = stringResource(R.string.logout), onClick = onLogout)
     }
 }
 
@@ -135,7 +149,7 @@ fun ProfileInfoBlock(label: String, value: String?) {
                 color = colorResource(R.color.gray)
             )
             Text(
-                text = value ?: "Не указано",
+                text = value ?: stringResource(R.string.not_specified),
                 style = MaterialTheme.typography.bodyLarge,
                 color = colorResource(R.color.light_black)
             )
@@ -155,7 +169,7 @@ fun SubjectsBlock(subjects: List<Subject>) {
     ) {
         Column {
             Text(
-                text = "Предметы:",
+                text = stringResource(R.string.subjects),
                 style = MaterialTheme.typography.labelSmall,
                 color = colorResource(R.color.gray)
             )
@@ -229,13 +243,13 @@ fun CuratorProfileContent(profile: CuratorProfileModel, onLogout: () -> Unit) {
         verticalArrangement = Arrangement.Top
     ) {
         TitleField(
-            loginText = "Профиль куратора",
-            accessText = "Информация о вашей учётной записи",
+            loginText = stringResource(R.string.profile_curator_title),
+            accessText = stringResource(R.string.profile_curator_access),
             modifier = Modifier.padding(top = 0.dp, bottom = 0.dp)
         )
         Spacer(modifier = Modifier.height(32.dp))
-        ProfileInfoBlock(label = "ФИО", value = profile.fullName)
-        ProfileInfoBlock(label = "Email", value = profile.email)
+        ProfileInfoBlock(label = stringResource(R.string.full_name), value = profile.fullName)
+        ProfileInfoBlock(label = stringResource(R.string.email), value = profile.email)
         if (!profile.subjects.isNullOrEmpty()) {
             SubjectsBlock(subjects = profile.subjects)
         }
@@ -243,7 +257,7 @@ fun CuratorProfileContent(profile: CuratorProfileModel, onLogout: () -> Unit) {
             FacultiesBlock(faculties = profile.faculties)
         }
         Spacer(modifier = Modifier.height(32.dp))
-        AppButton(text = "Выйти", onClick = onLogout)
+        AppButton(text = stringResource(R.string.logout), onClick = onLogout)
     }
 }
 
@@ -259,7 +273,7 @@ fun FacultiesBlock(faculties: List<Faculty>) {
     ) {
         Column {
             Text(
-                text = "Факультеты:",
+                text = stringResource(R.string.faculties),
                 style = MaterialTheme.typography.labelSmall,
                 color = colorResource(R.color.gray)
             )

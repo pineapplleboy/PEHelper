@@ -86,44 +86,6 @@ class AuthViewModel : ViewModel(), KoinComponent {
         }
     }
 
-    fun refresh(refreshToken: String?) {
-        viewModelScope.launch {
-            _authState.value = AuthState.Loading
-            try {
-                val response = api.refresh(RefreshTokenModel(refreshToken))
-                if (response.isSuccessful) {
-                    tokenStorage.accessToken = response.body()?.accessToken
-                    tokenStorage.refreshToken = response.body()?.refreshToken
-                    val role = fetchAndStoreRole()
-                    _authState.value = AuthState.Success(role)
-                } else {
-                    val errorBody = response.errorBody()?.string()
-                    val errorMessage = try {
-                        val err = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                        when {
-                            !err.title.isNullOrBlank() && !err.detail.isNullOrBlank() -> err.title + "\n" + err.detail
-                            !err.detail.isNullOrBlank() -> err.detail
-                            !err.title.isNullOrBlank() && !err.errors.isNullOrEmpty() -> {
-                                val firstField = err.errors.entries.firstOrNull()
-                                val firstMsg = firstField?.value?.firstOrNull()
-                                if (firstMsg != null) err.title + "\n" + firstMsg else err.title
-                            }
-
-                            !err.title.isNullOrBlank() -> err.title
-                            !err.message.isNullOrBlank() -> err.message
-                            else -> errorBody
-                        }
-                    } catch (e: Exception) {
-                        if (!errorBody.isNullOrBlank()) errorBody else null
-                    }
-                    _authState.value = AuthState.Error(errorMessage ?: "Unknown error")
-                }
-            } catch (e: Exception) {
-                _authState.value = AuthState.Error(e.localizedMessage ?: "Unknown error")
-            }
-        }
-    }
-
     fun logout() {
         tokenStorage.clearTokens()
     }
@@ -180,16 +142,5 @@ class AuthViewModel : ViewModel(), KoinComponent {
         } catch (e: Exception) {
             false
         }
-    }
-
-    suspend fun getOrFetchRole(): String? {
-        tokenStorage.role?.let { return it }
-        val response = api.getSession()
-        if (response.isSuccessful) {
-            val role = response.body()?.role
-            tokenStorage.role = role
-            return role
-        }
-        return null
     }
 } 
