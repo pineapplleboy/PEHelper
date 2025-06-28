@@ -96,7 +96,7 @@ fun AuthScreen(
                             popUpTo("auth") { inclusive = true }
                         }
 
-                        "Teacher" -> navController.navigate("profile") {
+                        "Teacher" -> navController.navigate("sport_lessons") {
                             popUpTo("auth") { inclusive = true }
                         }
 

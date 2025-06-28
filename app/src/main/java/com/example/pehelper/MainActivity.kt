@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.pehelper.presentation.screen.AuthScreen
+import com.example.pehelper.presentation.screen.CreateLessonScreen
 import com.example.pehelper.presentation.screen.CuratorProfileScreen
 import com.example.pehelper.presentation.screen.ProfileScreen
 import com.example.pehelper.presentation.screen.SplashScreen
@@ -23,6 +24,7 @@ import com.example.pehelper.presentation.screen.SportsOrganizerProfileScreen
 import com.example.pehelper.presentation.screen.StudentProfileScreen
 import com.example.pehelper.presentation.screen.SportsEventsScreen
 import com.example.pehelper.presentation.screen.CreateSportsEventScreen
+import com.example.pehelper.presentation.screen.SportLessonsScreen
 import com.example.pehelper.presentation.screen.SportsEventDetailScreen
 import com.example.pehelper.ui.theme.PEHelperTheme
 
@@ -52,6 +54,20 @@ class MainActivity : ComponentActivity() {
                         composable("sports_organizer_profile") {
                             SportsOrganizerProfileScreen(
                                 navController = navController
+                            )
+                        }
+                        composable("sport_lessons") {
+                            SportLessonsScreen(
+                                onProfileClick = {
+                                    navController.navigate("profile")
+                                },
+                                navController = navController
+                            )
+                        }
+                        composable("create_lesson") {
+                            CreateLessonScreen(
+                                onCreated = { navController.popBackStack() },
+                                onBack = { navController.popBackStack() }
                             )
                         }
                         composable("sports_events") {

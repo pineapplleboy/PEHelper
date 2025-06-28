@@ -12,6 +12,9 @@
     <string name="no_students_attendance">Нет отметившихся студентов</string>
     <string name="accept">Принять</string>
     <string name="decline">Отклонить</string>
+    <string name="my_lessons">Мои пары</string>
+    <string name="no_lessons">Нет пар</string>
+    <string name="route_sport_lessons">sport_lessons</string>
     <string name="delete_event">Удалить мероприятие?</string>
     <string name="delete_event_confirm">Удалить</string>
     <string name="delete_event_cancel">Отмена</string>

@@ -9,6 +9,8 @@ import com.example.pehelper.data.model.TeacherProfileModel
 import com.example.pehelper.data.model.CreateSportsEventRequest
 import com.example.pehelper.data.model.SportsEventModel
 import com.example.pehelper.data.model.SportsEventsResponse
+import com.example.pehelper.data.model.TeacherPairsResponse
+import com.example.pehelper.data.model.TeacherSubjectsResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -57,6 +59,15 @@ interface PEAPI {
         @Query("userId") userId: String,
         @Query("status") status: String
     )
+
+    @GET("/api/teacher/pairs")
+    suspend fun getTeacherPairs(): TeacherPairsResponse
+
+    @GET("/api/teacher/subjects")
+    suspend fun getTeacherSubjects(): TeacherSubjectsResponse
+
+    @POST("/api/teacher/pairs")
+    suspend fun createTeacherPair(@Query("subjectId") subjectId: String)
 }
 
 data class SessionResponse(

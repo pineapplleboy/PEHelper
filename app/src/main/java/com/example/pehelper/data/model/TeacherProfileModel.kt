@@ -7,6 +7,11 @@ data class Subject(
     @SerializedName("name") val name: String?
 )
 
+data class TeacherSubjectsResponse(
+    @SerializedName("subjects")
+    val subjects: List<Subject>
+)
+
 data class TeacherProfileModel(
     @SerializedName("fullName")
     val fullName: String?,
