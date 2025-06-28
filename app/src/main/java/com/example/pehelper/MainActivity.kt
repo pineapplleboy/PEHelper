@@ -12,9 +12,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.pehelper.presentation.screen.AuthScreen
 import com.example.pehelper.presentation.screen.CreateLessonScreen
 import com.example.pehelper.presentation.screen.CuratorProfileScreen
@@ -24,6 +26,7 @@ import com.example.pehelper.presentation.screen.SportsOrganizerProfileScreen
 import com.example.pehelper.presentation.screen.StudentProfileScreen
 import com.example.pehelper.presentation.screen.SportsEventsScreen
 import com.example.pehelper.presentation.screen.CreateSportsEventScreen
+import com.example.pehelper.presentation.screen.LessonStudentsScreen
 import com.example.pehelper.presentation.screen.SportLessonsScreen
 import com.example.pehelper.presentation.screen.SportsEventDetailScreen
 import com.example.pehelper.ui.theme.PEHelperTheme
@@ -61,6 +64,21 @@ class MainActivity : ComponentActivity() {
                                 onProfileClick = {
                                     navController.navigate("profile")
                                 },
+                                navController = navController
+                            )
+                        }
+                        composable(
+                            "lesson_students/{lessonId}/{lessonTime}/{lessonTitle}",
+                            arguments = listOf(
+                                navArgument("lessonId") { type = NavType.StringType },
+                                navArgument("lessonTime") { type = NavType.StringType },
+                                navArgument("lessonTitle") { type = NavType.StringType }
+                            )
+                        ) { backStackEntry ->
+                            LessonStudentsScreen(
+                                lessonId = backStackEntry.arguments?.getString("lessonId") ?: "",
+                                lessonTime = backStackEntry.arguments?.getString("lessonTime") ?: "",
+                                lessonTitle = backStackEntry.arguments?.getString("lessonTitle") ?: "",
                                 navController = navController
                             )
                         }

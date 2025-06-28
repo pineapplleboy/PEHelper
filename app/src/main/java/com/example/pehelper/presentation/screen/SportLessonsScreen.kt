@@ -127,7 +127,10 @@ fun SportLessonsScreen(
 							contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)
 						) {
 							items(state.pairs) { pair ->
-								TeacherLessonCard(lesson = pair.toLessonModel())
+								TeacherLessonCard(lesson = pair.toLessonModel(),
+									onClick = {
+										navController?.navigate("lesson_students/${pair.id}/${pair.toLessonModel().time}/${pair.toLessonModel().title}")
+									})
 							}
 						}
 					}

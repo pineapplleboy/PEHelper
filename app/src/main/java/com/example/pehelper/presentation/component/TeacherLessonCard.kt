@@ -1,6 +1,7 @@
 package com.example.pehelper.presentation.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,11 +32,15 @@ import com.example.pehelper.data.model.LessonModel
 @Composable
 fun TeacherLessonCard(
 	lesson: LessonModel,
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
+	onClick: () -> Unit
 ) {
 	Card(
 		modifier = modifier
-			.fillMaxWidth(),
+			.fillMaxWidth()
+			.clickable {
+				onClick()
+			},
 		shape = RoundedCornerShape(20.dp),
 		colors = CardDefaults.cardColors(containerColor = Color.White),
 		elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
