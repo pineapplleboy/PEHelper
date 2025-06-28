@@ -100,7 +100,7 @@ fun AuthScreen(
                             popUpTo("auth") { inclusive = true }
                         }
 
-                        "SportsOrganizer" -> navController.navigate("sports_organizer_profile") {
+                        "SportsOrganizer" -> navController.navigate("sports_events") {
                             popUpTo("auth") { inclusive = true }
                         }
 
