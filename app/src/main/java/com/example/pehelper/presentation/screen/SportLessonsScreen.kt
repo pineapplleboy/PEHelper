@@ -79,7 +79,7 @@ fun SportLessonsScreen(
 			Box(
 				modifier = Modifier
 					.fillMaxWidth()
-					.padding(32.dp),
+					.padding(bottom = 12.dp, start = 32.dp, end = 32.dp),
 				contentAlignment = Alignment.Center
 			) {
 				Button(

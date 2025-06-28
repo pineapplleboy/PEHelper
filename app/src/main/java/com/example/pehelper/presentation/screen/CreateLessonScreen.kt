@@ -8,12 +8,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -21,6 +24,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,11 +34,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.pehelper.R
+import com.example.pehelper.data.model.CreateSportsEventRequest
 import org.koin.androidx.compose.koinViewModel
 import com.example.pehelper.data.model.Subject
+import java.time.ZoneId
+import java.time.ZoneOffset
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CreateLessonScreen(
@@ -59,23 +70,37 @@ fun CreateLessonScreen(
 
 	Scaffold(
 		topBar = {
-			Box(
-				Modifier
-					.fillMaxWidth()
-					.background(Color.White)
-					.padding(16.dp)
-			) {
-				TextButton(onClick = onBack, modifier = Modifier.align(Alignment.CenterStart)) {
-					Text("Отмена", color = Color.Red)
-				}
-				Text(
-					text = "Создать занятие",
-					style = MaterialTheme.typography.titleMedium,
-					fontSize = 18.sp,
-					color = Color.Black,
-					modifier = Modifier.align(Alignment.Center)
-				)
-			}
+			CenterAlignedTopAppBar(
+				title = {
+					Text(
+						text = "Новое занятие",
+						style = MaterialTheme.typography.titleMedium,
+						fontWeight = FontWeight.Bold,
+						fontSize = 18.sp,
+						color = Color.Black
+					)
+				},
+				windowInsets = WindowInsets(0),
+				navigationIcon = {
+					TextButton(onClick = onBack) {
+						Text("Отмена", color = colorResource(R.color.red), fontSize = 16.sp)
+					}
+				},
+				actions = {
+					TextButton(
+						onClick = {
+							selectedSubject.value?.id?.let { viewModel.createPair(it) }
+						}
+					) {
+						Text(
+							if (createState is CreatePairState.Loading) "Создание..." else "Готово",
+							color = colorResource(R.color.red),
+							fontSize = 16.sp
+						)
+					}
+				},
+				colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.White)
+			)
 		},
 		containerColor = Color.White
 	) { padding ->
@@ -115,17 +140,6 @@ fun CreateLessonScreen(
 						)
 					}
 					Spacer(modifier = Modifier.padding(16.dp))
-					Button(
-						onClick = {
-							selectedSubject.value?.id?.let { viewModel.createPair(it) }
-						},
-						enabled = selectedSubject.value != null && createState !is CreatePairState.Loading,
-						modifier = Modifier.fillMaxWidth()
-					) {
-						Text(
-							if (createState is CreatePairState.Loading) "Создание..." else "Создать"
-						)
-					}
 				}
 			}
 			if (showDialog.value && subjectsState is TeacherSubjectsState.Success) {
