@@ -2,17 +2,22 @@ package com.example.pehelper.presentation.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -30,13 +35,15 @@ fun LessonStudentsScreen(
 	lessonTitle: String,
 	navController: NavController? = null
 ) {
+	val isSearching = remember { mutableStateOf(false) }
+	val searchText = remember { mutableStateOf("") }
 	Scaffold(
 		topBar = {
-			Column(
+			Row(
 				modifier = Modifier
 					.fillMaxWidth()
 					.padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 8.dp),
-				horizontalAlignment = Alignment.Start
+				verticalAlignment = Alignment.CenterVertically
 			) {
 				IconButton(onClick = { navController?.popBackStack() }) {
 					Icon(
@@ -44,16 +51,41 @@ fun LessonStudentsScreen(
 						contentDescription = "Назад"
 					)
 				}
-				Text(
-					text = "$lessonTitle $lessonTime",
-					style = MaterialTheme.typography.titleLarge,
-					fontWeight = FontWeight.Bold,
-					fontSize = 20.sp,
-					modifier = Modifier.padding(start = 8.dp, top = 8.dp)
-				)
+				Spacer(modifier = Modifier.width(8.dp))
+				if (!isSearching.value) {
+					Text(
+						text = "$lessonTitle $lessonTime",
+						style = MaterialTheme.typography.titleLarge,
+						fontWeight = FontWeight.Bold,
+						fontSize = 20.sp,
+						modifier = Modifier.weight(1f)
+					)
+					IconButton(onClick = { isSearching.value = true }) {
+						Icon(
+							painter = painterResource(id = R.drawable.search_ic),
+							contentDescription = "Поиск"
+						)
+					}
+				} else {
+					TextField(
+						value = searchText.value,
+						onValueChange = { searchText.value = it },
+						placeholder = { Text("Поиск...") },
+						modifier = Modifier.weight(1f)
+					)
+					IconButton(onClick = {
+						isSearching.value = false
+						searchText.value = ""
+					}) {
+						Icon(
+							painter = painterResource(id = R.drawable.cross_search_ic),
+							contentDescription = "Закрыть"
+						)
+					}
+				}
 			}
 		}
-	) { padding ->
+	){ padding ->
 		LazyColumn(
 			modifier = Modifier
 				.fillMaxSize()
