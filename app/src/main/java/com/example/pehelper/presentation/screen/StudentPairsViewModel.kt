@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pehelper.data.model.StudentPairModel
 import com.example.pehelper.data.model.StudentEventModel
+import com.example.pehelper.data.model.SportsEventModel
 import com.example.pehelper.data.network.PEAPI
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +21,7 @@ sealed class StudentPairsState {
 
 sealed class StudentEventsState {
 	data object Loading : StudentEventsState()
-	data class Success(val events: List<StudentEventModel>) : StudentEventsState()
+	data class Success(val events: List<StudentEventWithStatus>) : StudentEventsState()
 	data class Error(val error: String) : StudentEventsState()
 }
 
@@ -37,6 +38,12 @@ sealed class ApplicationState {
 	data object Success : ApplicationState()
 	data class Error(val error: String) : ApplicationState()
 }
+
+data class StudentEventWithStatus(
+	val event: SportsEventModel,
+	val status: String?,
+	val isApplied: Boolean
+)
 
 class StudentPairsViewModel : ViewModel(), KoinComponent {
 	private val api: PEAPI by inject()
@@ -58,8 +65,7 @@ class StudentPairsViewModel : ViewModel(), KoinComponent {
 			_pairsState.value = StudentPairsState.Loading
 			try {
 				val response = api.getStudentPairs()
-				
-				// Получаем статус посещаемости для каждой пары
+
 				val pairsWithStatus = response.pairs.map { pair ->
 					try {
 						val attendanceResponse = api.getAttendanceStatus(pair.id)
@@ -68,7 +74,6 @@ class StudentPairsViewModel : ViewModel(), KoinComponent {
 							status = attendanceResponse.status
 						)
 					} catch (e: Exception) {
-						// Если не удалось получить статус, оставляем исходные данные
 						pair
 					}
 				}
@@ -84,18 +89,21 @@ class StudentPairsViewModel : ViewModel(), KoinComponent {
 			_eventsState.value = StudentEventsState.Loading
 			try {
 				val response = api.getStudentEvents()
-				
-				// Получаем статус заявки для каждого мероприятия
+
 				val eventsWithStatus = response.events.map { event ->
 					try {
 						val applicationResponse = api.getStudentApplication(event.id)
-						event.copy(
-							isApplied = applicationResponse.isApplied,
-							status = applicationResponse.status
+						StudentEventWithStatus(
+							event = event,
+							status = applicationResponse.status,
+							isApplied = applicationResponse.isApplied
 						)
 					} catch (e: Exception) {
-						// Если не удалось получить статус, оставляем исходные данные
-						event
+						StudentEventWithStatus(
+							event = event,
+							status = null,
+							isApplied = false
+						)
 					}
 				}
 				_eventsState.value = StudentEventsState.Success(eventsWithStatus)
@@ -112,7 +120,7 @@ class StudentPairsViewModel : ViewModel(), KoinComponent {
 				val response = api.markAttendance(pairId)
 				if (response.isSuccessful) {
 					_attendanceState.value = AttendanceState.Success
-					getPairs() // Обновляем список после изменения
+					getPairs()
 				} else {
 					_attendanceState.value = AttendanceState.Error("Ошибка сервера: ${response.code()}")
 				}
@@ -129,7 +137,7 @@ class StudentPairsViewModel : ViewModel(), KoinComponent {
 				val response = api.cancelAttendance(pairId)
 				if (response.isSuccessful) {
 					_attendanceState.value = AttendanceState.Success
-					getPairs() // Обновляем список после изменения
+					getPairs()
 				} else {
 					_attendanceState.value = AttendanceState.Error("Ошибка сервера: ${response.code()}")
 				}
@@ -146,7 +154,7 @@ class StudentPairsViewModel : ViewModel(), KoinComponent {
 				val response = api.createStudentApplication(eventId)
 				if (response.isSuccessful) {
 					_applicationState.value = ApplicationState.Success
-					getEvents() // Обновляем список после изменения
+					getEvents()
 				} else {
 					_applicationState.value = ApplicationState.Error("Ошибка сервера: ${response.code()}")
 				}
@@ -163,7 +171,7 @@ class StudentPairsViewModel : ViewModel(), KoinComponent {
 				val response = api.deleteStudentApplication(eventId)
 				if (response.isSuccessful) {
 					_applicationState.value = ApplicationState.Success
-					getEvents() // Обновляем список после изменения
+					getEvents()
 				} else {
 					_applicationState.value = ApplicationState.Error("Ошибка сервера: ${response.code()}")
 				}

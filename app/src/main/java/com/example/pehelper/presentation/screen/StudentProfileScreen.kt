@@ -1,5 +1,8 @@
 package com.example.pehelper.presentation.screen
 
+import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,26 +35,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.pehelper.R
 import com.example.pehelper.data.model.StudentProfileModel
 import com.example.pehelper.presentation.component.AppButton
 import com.example.pehelper.presentation.component.AvatarPicker
+import com.example.pehelper.presentation.component.StudentCard
+import com.example.pehelper.presentation.component.StudentLessonCard
+import com.example.pehelper.presentation.component.StudentEventCard
 import org.koin.androidx.compose.koinViewModel
-import android.net.Uri
-import android.content.Context
-import androidx.compose.ui.platform.LocalContext
-import com.example.pehelper.presentation.screen.AvatarViewModel
-import com.example.pehelper.presentation.screen.AvatarState
-import com.example.pehelper.presentation.screen.AvatarLoadState
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import kotlinx.coroutines.delay
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun StudentProfileScreen(
     navController: NavController,
@@ -62,11 +63,6 @@ fun StudentProfileScreen(
     val state by profileViewModel.profileState.collectAsState()
     val avatarState by avatarViewModel.avatarState.collectAsState()
     val avatarLoadState by avatarViewModel.avatarLoadState.collectAsState()
-    var isRefreshing by remember { mutableStateOf(false) }
-
-    val swipeRefreshState = rememberSwipeRefreshState(
-        isRefreshing = isRefreshing
-    )
 
     LaunchedEffect(Unit) {
         profileViewModel.getStudentProfile()
@@ -91,76 +87,57 @@ fun StudentProfileScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        SwipeRefresh(
-            state = swipeRefreshState,
-            onRefresh = {
-                isRefreshing = true
-                profileViewModel.getStudentProfile()
+        when (val currentState = state) {
+            is ProfileState.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(
+                        Alignment.Center
+                    )
+                )
             }
-        ) {
-            LaunchedEffect(isRefreshing) {
-                if (isRefreshing) {
-                    delay(1000)
-                    isRefreshing = false
-                }
+
+            is ProfileState.Error -> {
+                Text(
+                    text = currentState.error,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
             
-            Box(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                when (val currentState = state) {
-                    is ProfileState.Loading -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(
-                                Alignment.Center
-                            )
-                        )
-                    }
-
-                    is ProfileState.Error -> {
-                        Text(
-                            text = currentState.error,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-
-                    is ProfileState.SuccessStudent -> {
-                        StudentProfileContent(
-                            profile = currentState.profile,
-                            onLogout = {
-                                authViewModel.logout()
-                                navController.navigate("auth") {
-                                    popUpTo("student_profile") { inclusive = true }
-                                }
-                            },
-                            onViewAllAttendances = {
-                                navController.navigate("all_attendances")
-                            },
-                            avatarViewModel = avatarViewModel
-                        )
-                    }
-
-                    else -> {}
-                }
-                IconButton(
-                    onClick = { 
-                        navController.navigate("student_pairs") {
+            is ProfileState.SuccessStudent -> {
+                StudentProfileContent(
+                    profile = currentState.profile,
+                    onLogout = {
+                        authViewModel.logout()
+                        navController.navigate("auth") {
                             popUpTo("student_profile") { inclusive = true }
                         }
                     },
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(start = 16.dp, top = 16.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.back_arrow_ic),
-                        contentDescription = stringResource(id = R.string.back),
-                        tint = colorResource(id = R.color.black),
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
+                    onViewAllAttendances = {
+                        navController.navigate("all_attendances")
+                    },
+                    avatarViewModel = avatarViewModel
+                )
             }
+
+            else -> {}
+        }
+        IconButton(
+            onClick = { 
+                navController.navigate("student_pairs") {
+                    popUpTo("student_profile") { inclusive = true }
+                }
+            },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp, top = 16.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.back_arrow_ic),
+                contentDescription = stringResource(id = R.string.back),
+                tint = colorResource(id = R.color.black),
+                modifier = Modifier.size(28.dp)
+            )
         }
     }
 }
@@ -251,7 +228,7 @@ fun StudentProfileContent(
         ProfileInfoBlock(label = stringResource(R.string.full_name), value = profile.fullName)
         ProfileInfoBlock(label = stringResource(R.string.email), value = profile.email)
         ProfileInfoBlock(label = stringResource(R.string.faculty), value = profile.faculty?.name)
-        ProfileInfoBlock(label = stringResource(R.string.course), value = profile.course?.toString())
+        ProfileInfoBlock(label = stringResource(R.string.course), value = profile.course.toString())
         ProfileInfoBlock(label = stringResource(R.string.group), value = profile.group)
 
         Row(
@@ -260,7 +237,7 @@ fun StudentProfileContent(
         ) {
             ProfileInfoBlock(
                 label = stringResource(R.string.classes_amount), 
-                value = profile.classesAmount?.toString(),
+                value = profile.classesAmount.toString(),
                 modifier = Modifier.weight(1f)
             )
             Spacer(modifier = Modifier.width(12.dp))

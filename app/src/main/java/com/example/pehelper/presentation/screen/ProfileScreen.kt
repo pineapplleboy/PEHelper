@@ -232,6 +232,7 @@ fun CuratorProfileContent(profile: CuratorProfileModel, onLogout: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
+        Spacer(modifier = Modifier.height(80.dp))
         TitleField(
             loginText = stringResource(R.string.profile_curator_title),
             accessText = stringResource(R.string.profile_curator_access),

@@ -92,11 +92,11 @@ fun AuthScreen(
                             popUpTo("auth") { inclusive = true }
                         }
 
-                        "Curator" -> navController.navigate("curator_events") {
+                        "Curator" -> navController.navigate("curator_applications") {
                             popUpTo("auth") { inclusive = true }
                         }
 
-                        "Teacher" -> navController.navigate("teacher_pairs") {
+                        "Teacher" -> navController.navigate("sport_lessons") {
                             popUpTo("auth") { inclusive = true }
                         }
 

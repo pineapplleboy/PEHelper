@@ -3,6 +3,7 @@ package com.example.pehelper.presentation.screen
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -31,40 +34,41 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.compose.ui.unit.sp
 import com.example.pehelper.R
-import com.example.pehelper.data.model.StudentProfileModel
+import com.example.pehelper.data.model.CuratorStudentProfileResponse
 import com.example.pehelper.presentation.component.AppButton
 import com.example.pehelper.presentation.component.AvatarPicker
 import org.koin.androidx.compose.koinViewModel
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SportsOrganizerProfileScreen(
-    navController: NavController,
-    authViewModel: AuthViewModel = koinViewModel(),
-    profileViewModel: ProfileViewModel = koinViewModel(),
+fun CuratorStudentProfileScreen(
+    studentId: String,
+    onBack: () -> Unit,
+    onViewAllAttendances: (String) -> Unit = {},
+    viewModel: CuratorStudentProfileViewModel = koinViewModel(),
     avatarViewModel: AvatarViewModel = koinViewModel()
 ) {
-    val state by profileViewModel.profileState.collectAsState()
+    val state by viewModel.state.collectAsState()
     val avatarState by avatarViewModel.avatarState.collectAsState()
     val avatarLoadState by avatarViewModel.avatarLoadState.collectAsState()
 
-    LaunchedEffect(Unit) {
-        profileViewModel.getStudentProfile()
+    LaunchedEffect(studentId) {
+        viewModel.loadProfile(studentId)
     }
 
     LaunchedEffect(state) {
-        if (state is ProfileState.SuccessStudent) {
-            (state as ProfileState.SuccessStudent).profile.avatarId?.let { avatarId ->
+        if (state is CuratorStudentProfileState.Success) {
+            (state as CuratorStudentProfileState.Success).data.student.avatarId?.let { avatarId ->
                 avatarViewModel.loadAvatar(avatarId)
             }
         }
@@ -82,36 +86,30 @@ fun SportsOrganizerProfileScreen(
             .background(Color.White)
     ) {
         when (val currentState = state) {
-            is ProfileState.Loading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            is CuratorStudentProfileState.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
-
-            is ProfileState.Error -> {
+            is CuratorStudentProfileState.Error -> {
                 Text(
                     text = currentState.error,
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
-
-            is ProfileState.SuccessStudent -> {
-                SportsOrganizerProfileContent(
-                    profile = currentState.profile,
-                    onLogout = {
-                        authViewModel.logout()
-                        navController.navigate("auth") {
-                            popUpTo("sports_organizer_profile") { inclusive = true }
-                        }
-                    },
-                    navController = navController,
-                    avatarViewModel = avatarViewModel
+            is CuratorStudentProfileState.Success -> {
+                CuratorStudentProfileContent(
+                    data = currentState.data,
+                    avatarViewModel = avatarViewModel,
+                    onViewAllAttendances = onViewAllAttendances,
+                    studentId = studentId
                 )
             }
-
-            else -> {}
         }
+        
         IconButton(
-            onClick = { navController.popBackStack() },
+            onClick = onBack,
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(start = 16.dp, top = 16.dp)
@@ -126,13 +124,12 @@ fun SportsOrganizerProfileScreen(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SportsOrganizerProfileContent(
-    profile: StudentProfileModel,
-    onLogout: () -> Unit,
-    navController: NavController,
-    avatarViewModel: AvatarViewModel
+fun CuratorStudentProfileContent(
+    data: CuratorStudentProfileResponse,
+    avatarViewModel: AvatarViewModel,
+    onViewAllAttendances: (String) -> Unit,
+    studentId: String
 ) {
     var selectedAvatarUri by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
@@ -140,12 +137,10 @@ fun SportsOrganizerProfileContent(
     val avatarLoadState by avatarViewModel.avatarLoadState.collectAsState()
 
     val displayAvatarUri = when (avatarLoadState) {
-        is AvatarLoadState.Success -> (avatarLoadState as AvatarLoadState.Success).avatarUri
-            ?: selectedAvatarUri
-
+        is AvatarLoadState.Success -> (avatarLoadState as AvatarLoadState.Success).avatarUri ?: selectedAvatarUri
         else -> selectedAvatarUri
     }
-
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -161,8 +156,8 @@ fun SportsOrganizerProfileContent(
             avatarUri = displayAvatarUri,
             onAvatarSelected = { uri ->
                 selectedAvatarUri = uri
-                profile.id?.let { userId ->
-                    avatarViewModel.uploadAvatar(context, userId, uri, profile.avatarId)
+                data.student.id?.let { userId ->
+                    avatarViewModel.uploadAvatar(context, userId, uri, data.student.avatarId)
                 }
             }
         )
@@ -175,7 +170,6 @@ fun SportsOrganizerProfileContent(
                     strokeWidth = 2.dp
                 )
             }
-
             avatarState is AvatarState.Loading -> {
                 Spacer(modifier = Modifier.height(8.dp))
                 CircularProgressIndicator(
@@ -183,7 +177,6 @@ fun SportsOrganizerProfileContent(
                     strokeWidth = 2.dp
                 )
             }
-
             avatarState is AvatarState.Error -> {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -192,7 +185,6 @@ fun SportsOrganizerProfileContent(
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-
             avatarLoadState is AvatarLoadState.Error -> {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -201,13 +193,12 @@ fun SportsOrganizerProfileContent(
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-
             else -> {}
         }
-
+        
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = stringResource(R.string.profile_organizer_title),
+            text = stringResource(R.string.profile_student_title),
             style = MaterialTheme.typography.titleLarge
         )
         Text(
@@ -216,27 +207,27 @@ fun SportsOrganizerProfileContent(
             color = Color.Gray
         )
         Spacer(modifier = Modifier.height(32.dp))
-        ProfileInfoBlock(label = stringResource(R.string.full_name), value = profile.fullName)
-        ProfileInfoBlock(label = stringResource(R.string.email), value = profile.email)
-        ProfileInfoBlock(label = stringResource(R.string.faculty), value = profile.faculty?.name)
-        ProfileInfoBlock(
-            label = stringResource(R.string.course),
-            value = profile.course?.toString()
-        )
-        ProfileInfoBlock(label = stringResource(R.string.group), value = profile.group)
+        
+        ProfileInfoBlock(label = stringResource(R.string.full_name), value = data.student.fullName)
+        ProfileInfoBlock(label = stringResource(R.string.email), value = data.student.email)
+        ProfileInfoBlock(label = stringResource(R.string.faculty), value = data.student.faculty?.name)
+        ProfileInfoBlock(label = stringResource(R.string.course), value = data.student.course?.toString())
+        ProfileInfoBlock(label = stringResource(R.string.group), value = data.student.group)
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             ProfileInfoBlock(
-                label = stringResource(R.string.classes_amount),
-                value = profile.classesAmount?.toString(),
+                label = stringResource(R.string.classes_amount), 
+                value = data.student.classesAmount?.toString(),
                 modifier = Modifier.weight(1f)
             )
             Spacer(modifier = Modifier.width(12.dp))
             IconButton(
-                onClick = { navController.navigate("all_attendances") },
+                onClick = {
+                    onViewAllAttendances(studentId)
+                },
                 modifier = Modifier.size(40.dp)
             ) {
                 Icon(
@@ -247,24 +238,7 @@ fun SportsOrganizerProfileContent(
                 )
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-        AppButton(text = stringResource(R.string.logout), onClick = onLogout)
-        Spacer(modifier = Modifier.height(16.dp))
+        
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
-
-@RequiresApi(Build.VERSION_CODES.O)
-private fun formatAppointmentDate(dateString: String?): String {
-    if (dateString.isNullOrEmpty()) {
-        return "Не указана"
-    }
-
-    return try {
-        val dateTime = LocalDateTime.parse(dateString.replace("Z", ""))
-        val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-        dateTime.format(formatter)
-    } catch (e: Exception) {
-        dateString
-    }
-} 

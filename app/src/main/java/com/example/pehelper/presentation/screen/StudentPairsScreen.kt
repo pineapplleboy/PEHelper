@@ -219,7 +219,6 @@ fun StudentPairsScreen(
 															viewModel.cancelAttendance(pair.id)
 														}
 														else -> {
-															// Никаких действий для других статусов
 														}
 													}
 												}
@@ -263,30 +262,27 @@ fun StudentPairsScreen(
 									) {
 										items(state.events) { event ->
 											StudentEventCard(
-												event = event,
+												eventWithStatus = event,
 												onApplicationClick = {
 													when (event.status) {
 														"DidNotVisit" -> {
-															viewModel.createApplication(event.id)
+															viewModel.createApplication(event.event.id)
 														}
 														"Pending" -> {
-															viewModel.deleteApplication(event.id)
+															viewModel.deleteApplication(event.event.id)
 														}
 														"Accepted" -> {
-															// Статус Accepted - никаких действий
 														}
 														"Declined" -> {
-															// Статус Declined - никаких действий
 														}
 														null -> {
-															viewModel.createApplication(event.id)
+															viewModel.createApplication(event.event.id)
 														}
 														else -> {
-															// Неизвестный статус
 														}
 													}
 												},
-												onEventClick = { onEventClick(event.id) }
+												onEventClick = { onEventClick(event.event.id) }
 											)
 										}
 									}

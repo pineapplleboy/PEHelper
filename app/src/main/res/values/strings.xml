@@ -9,6 +9,7 @@
     <string name="status_accepted">Статус: Принято</string>
     <string name="status_declined">Статус: Отклонено</string>
     <string name="students_attendance_title">Отметившиеся студенты:</string>
+    <string name="pending_applications">Ожидающие заявки:</string>
     <string name="no_students_attendance">Нет отметившихся студентов</string>
     <string name="accept">Принять</string>
     <string name="decline">Отклонить</string>
@@ -98,4 +99,9 @@
     <string name="attendance_status_did_not_visit">Не посещал</string>
     <string name="event_details">Детали мероприятия</string>
     <string name="curator_events">Мероприятия</string>
+    <string name="curator_applications">Заявки</string>
+    <string name="no_applications">Нет заявок</string>
+    <string name="approve">Подтвердить</string>
+    <string name="all_applications_processed">Все заявки обработаны!</string>
+    <string name="tap_to_view_profile">Нажмите для просмотра профиля</string>
 </resources>

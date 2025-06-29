@@ -29,18 +29,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pehelper.R
-import com.example.pehelper.data.model.StudentEventModel
+import com.example.pehelper.presentation.screen.StudentEventWithStatus
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun StudentEventCard(
-    event: StudentEventModel,
+    eventWithStatus: StudentEventWithStatus,
     modifier: Modifier = Modifier,
     onApplicationClick: () -> Unit,
     onEventClick: () -> Unit
 ) {
+    val event = eventWithStatus.event
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
@@ -92,7 +93,7 @@ fun StudentEventCard(
                         color = Color(0xFF666666)
                     )
 
-                    event.status?.let { status ->
+                    eventWithStatus.status?.let { status ->
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
@@ -111,20 +112,20 @@ fun StudentEventCard(
                     }
                 }
 
-                val shouldShowButton = shouldShowButton(event.status)
+                val shouldShowButton = shouldShowButton(eventWithStatus.status)
                 if (shouldShowButton) {
                     Spacer(modifier = Modifier.width(16.dp))
                     Button(
                         onClick = onApplicationClick,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (event.status == "Pending") Color(0xFFE57373) else Color(
+                            containerColor = if (eventWithStatus.status == "Pending") Color(0xFFE57373) else Color(
                                 0xFF4CAF50
                             )
                         ),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text(
-                            text = getButtonText(event.status),
+                            text = getButtonText(eventWithStatus.status),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             color = Color.White
@@ -154,6 +155,7 @@ private fun getStatusText(status: String): String {
         "Accepted" -> stringResource(id = R.string.status_accepted_text)
         "Declined" -> stringResource(id = R.string.status_declined_text)
         "DidNotVisit" -> stringResource(id = R.string.status_did_not_visit_text)
+        "Credited" -> "Подтверждено"
         else -> status
     }
 }
@@ -165,6 +167,7 @@ private fun getStatusColor(status: String): Color {
         "Accepted" -> Color(0xFF4CAF50)
         "Declined" -> Color(0xFFF44336)
         "DidNotVisit" -> Color(0xFF9E9E9E)
+        "Credited" -> Color(0xFF4CAF50)
         else -> Color(0xFF666666)
     }
 }
@@ -183,7 +186,7 @@ private fun getButtonText(status: String?): String {
 private fun shouldShowButton(status: String?): Boolean {
     return when (status) {
         "DidNotVisit", "Pending" -> true
-        "Accepted", "Declined" -> false
+        "Accepted", "Declined", "Credited" -> false
         null -> true
         else -> true
     }
