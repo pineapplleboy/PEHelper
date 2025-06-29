@@ -1,5 +1,6 @@
 package com.example.pehelper.presentation.screen
 
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -165,12 +166,14 @@ fun CuratorStudentAttendancesScreen(
                                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                                 ) {
                                     Column(Modifier.padding(16.dp)) {
-                                        Text("Пара №${'$'}{pair.pair.pairNumber}", fontWeight = FontWeight.Bold)
-                                        Text("Предмет: ${'$'}{pair.pair.subject.name}")
-                                        Text("Преподаватель: ${'$'}{pair.pair.teacher.fullName}")
-                                        Text("Дата: ${'$'}{pair.pair.date}")
-                                        Text("Статус: ${'$'}{getAttendanceStatusText(pair.status)}")
-                                        Text("Часов: ${'$'}{pair.classesAmount}")
+                                        Text("Пара №${pair.pair.pairNumber ?: "-"}", fontWeight = FontWeight.Bold)
+                                        Text("Предмет: ${pair.pair.subject?.name ?: "Не указан"}")
+                                        Text("Преподаватель: ${pair.pair.teacher?.fullName ?: "Не указан"}")
+                                        if (!pair.pair.date.isNullOrBlank()) {
+                                            Text("Дата: ${formatDate(pair.pair.date)}")
+                                        }
+                                        Text("Статус: ${getAttendanceStatusText(pair.status)}")
+                                        Text("Часов: ${pair.classesAmount ?: 0}")
                                     }
                                 }
                             }
@@ -191,11 +194,16 @@ fun CuratorStudentAttendancesScreen(
                                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                                 ) {
                                     Column(Modifier.padding(16.dp)) {
-                                        event.event.name?.let { Text(it, fontWeight = FontWeight.Bold) }
-                                        Text("Описание: ${'$'}{event.event.description}")
-                                        Text("Дата: ${'$'}{event.event.date}")
-                                        Text("Статус: ${'$'}{getAttendanceStatusText(event.status)}")
-                                        Text("Часов: ${'$'}{event.event.classesAmount}")
+                                        Text(event.event.name ?: "Название не указано", fontWeight = FontWeight.Bold)
+                                        Text("Описание: ${event.event.description ?: "Описание не указано"}")
+                                        if (!event.event.date.isNullOrBlank()) {
+                                            Text("Дата: ${formatDate(event.event.date)}")
+                                        }
+                                        Text("Статус: ${getAttendanceStatusText(event.status)}")
+                                        Text("Часов: ${event.event.classesAmount ?: 0}")
+                                        if (event.event.faculty != null) {
+                                            Text("Факультет: ${event.event.faculty.name ?: "Не указан"}")
+                                        }
                                     }
                                 }
                             }
@@ -217,8 +225,10 @@ fun CuratorStudentAttendancesScreen(
                                 ) {
                                     Column(Modifier.padding(16.dp)) {
                                         Text(activity.comment ?: "-")
-                                        Text("Дата: ${'$'}{activity.date}")
-                                        Text("Часов: ${'$'}{activity.classesAmount}")
+                                        if (!activity.date.isNullOrBlank()) {
+                                            Text("Дата: ${formatDate(activity.date)}")
+                                        }
+                                        Text("Часов: ${activity.classesAmount ?: 0}")
                                     }
                                 }
                             }
@@ -241,5 +251,56 @@ fun CuratorStudentAttendancesScreen(
                 modifier = Modifier.size(28.dp)
             )
         }
+    }
+}
+
+private fun getAttendanceStatusText(status: String?): String {
+    return when (status) {
+        "Visited" -> "Посещено"
+        "DidNotVisit" -> "Не посещено"
+        "Pending" -> "Ожидает подтверждения"
+        "Accepted" -> "Принято"
+        "Rejected" -> "Отклонено"
+        else -> status ?: "Неизвестно"
+    }
+}
+
+@SuppressLint("NewApi")
+private fun formatDate(date: String?): String {
+    return try {
+        if (date.isNullOrBlank()) {
+            return "Дата не указана"
+        }
+        
+        val cleanDate = date.replace("Z", "").trim()
+        if (cleanDate.isEmpty()) {
+            return "Дата не указана"
+        }
+        
+        val localDateTime = try {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+            LocalDateTime.parse(cleanDate, formatter)
+        } catch (e: Exception) {
+            try {
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
+                LocalDateTime.parse(cleanDate, formatter)
+            } catch (e2: Exception) {
+                try {
+                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+                    LocalDateTime.parse(cleanDate, formatter)
+                } catch (e3: Exception) {
+                    try {
+                        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
+                        LocalDateTime.parse(cleanDate, formatter)
+                    } catch (e4: Exception) {
+                        return "Неизвестный формат даты"
+                    }
+                }
+            }
+        }
+        val outputFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
+        localDateTime.format(outputFormatter)
+    } catch (e: Exception) {
+        "Ошибка формата даты"
     }
 }

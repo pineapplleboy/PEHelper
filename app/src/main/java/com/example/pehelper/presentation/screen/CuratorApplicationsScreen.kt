@@ -133,8 +133,36 @@ fun CuratorApplicationsScreen(
                     )
                 }
             }
-
-
+        },
+        floatingActionButton = {
+            if (selectedTab.value == 0) {
+                androidx.compose.material3.Button(
+                    onClick = onGroupsClick,
+                    modifier = Modifier.clip(RoundedCornerShape(25.dp)),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = colorResource(id = R.color.red)
+                    ),
+                    elevation = androidx.compose.material3.ButtonDefaults.buttonElevation(
+                        defaultElevation = 8.dp,
+                        pressedElevation = 4.dp
+                    )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.students),
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "ГРУППЫ",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        letterSpacing = 0.5.sp
+                    )
+                }
+            }
         }
     ) { padding ->
         SwipeRefresh(
@@ -160,7 +188,7 @@ fun CuratorApplicationsScreen(
                     .padding(padding)
             ) {
                 if (selectedTab.value == 0) {
-                    // Вкладка "Заявки"
+
                     when (val state = applicationsState) {
                         is ApplicationsListState.Loading -> {
                             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -217,36 +245,6 @@ fun CuratorApplicationsScreen(
                                             navController?.navigate("curator_student_profile/$studentId")
                                         }
                                     )
-                                    
-                                    androidx.compose.material3.Button(
-                                        onClick = onGroupsClick,
-                                        modifier = Modifier
-                                            .align(Alignment.BottomEnd)
-                                            .padding(16.dp)
-                                            .clip(RoundedCornerShape(25.dp)),
-                                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                                            containerColor = colorResource(id = R.color.red)
-                                        ),
-                                        elevation = androidx.compose.material3.ButtonDefaults.buttonElevation(
-                                            defaultElevation = 8.dp,
-                                            pressedElevation = 4.dp
-                                        )
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.students),
-                                            contentDescription = null,
-                                            tint = Color.White,
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text(
-                                            text = "ГРУППЫ",
-                                            color = Color.White,
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 14.sp,
-                                            letterSpacing = 0.5.sp
-                                        )
-                                    }
                                 }
                             }
                         }
