@@ -118,6 +118,13 @@ interface PEAPI {
         @Part avatar: okhttp3.MultipartBody.Part
     ): retrofit2.Response<Unit>
 
+    @Multipart
+    @PUT("/api/avatar")
+    suspend fun updateAvatar(
+        @Query("id") userId: String,
+        @Part avatar: okhttp3.MultipartBody.Part
+    ): retrofit2.Response<Unit>
+
     @GET("/api/avatar")
     suspend fun getAvatar(@Query("id") userId: String): retrofit2.Response<okhttp3.ResponseBody>
 

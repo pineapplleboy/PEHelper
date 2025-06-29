@@ -13,10 +13,16 @@ data class TeacherSubjectsResponse(
 )
 
 data class TeacherProfileModel(
+    @SerializedName("id")
+    val id: String?,
     @SerializedName("fullName")
     val fullName: String?,
     @SerializedName("email")
     val email: String?,
+    @SerializedName("role")
+    val role: String?,
+    @SerializedName("avatarId")
+    val avatarId: String?,
     @SerializedName("subjects")
     val subjects: List<Subject>? = null
 ) 

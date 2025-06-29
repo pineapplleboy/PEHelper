@@ -1,54 +1,31 @@
 package com.example.pehelper.presentation.screen
 
 import android.net.Uri
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.pehelper.R
-import com.example.pehelper.data.model.StudentProfileModel
+import com.example.pehelper.data.model.TeacherProfileModel
 import com.example.pehelper.presentation.component.AppButton
 import com.example.pehelper.presentation.component.AvatarPicker
 import org.koin.androidx.compose.koinViewModel
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun StudentProfileScreen(
+fun TeacherProfileScreen(
     navController: NavController,
-    authViewModel: AuthViewModel = koinViewModel(),
     profileViewModel: ProfileViewModel = koinViewModel(),
     avatarViewModel: AvatarViewModel = koinViewModel()
 ) {
@@ -57,12 +34,12 @@ fun StudentProfileScreen(
     val avatarLoadState by avatarViewModel.avatarLoadState.collectAsState()
 
     LaunchedEffect(Unit) {
-        profileViewModel.getStudentProfile()
+        profileViewModel.getTeacherProfile()
     }
 
     LaunchedEffect(state) {
-        if (state is ProfileState.SuccessStudent) {
-            (state as ProfileState.SuccessStudent).profile.avatarId?.let { avatarId ->
+        if (state is ProfileState.SuccessTeacher) {
+            (state as ProfileState.SuccessTeacher).profile.avatarId?.let { avatarId ->
                 avatarViewModel.loadAvatar(avatarId)
             }
         }
@@ -82,12 +59,9 @@ fun StudentProfileScreen(
         when (val currentState = state) {
             is ProfileState.Loading -> {
                 CircularProgressIndicator(
-                    modifier = Modifier.align(
-                        Alignment.Center
-                    )
+                    modifier = Modifier.align(Alignment.Center)
                 )
             }
-
             is ProfileState.Error -> {
                 Text(
                     text = currentState.error,
@@ -95,50 +69,20 @@ fun StudentProfileScreen(
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
-
-            is ProfileState.SuccessStudent -> {
-                StudentProfileContent(
+            is ProfileState.SuccessTeacher -> {
+                TeacherProfileContent(
                     profile = currentState.profile,
-                    onLogout = {
-                        authViewModel.logout()
-                        navController.navigate("auth") {
-                            popUpTo("student_profile") { inclusive = true }
-                        }
-                    },
-                    onViewAllAttendances = {
-                        navController.navigate("all_attendances")
-                    },
                     avatarViewModel = avatarViewModel
                 )
             }
-
             else -> {}
-        }
-        IconButton(
-            onClick = {
-                navController.navigate("student_pairs") {
-                    popUpTo("student_profile") { inclusive = true }
-                }
-            },
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 16.dp, top = 16.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.back_arrow_ic),
-                contentDescription = stringResource(id = R.string.back),
-                tint = colorResource(id = R.color.black),
-                modifier = Modifier.size(28.dp)
-            )
         }
     }
 }
 
 @Composable
-fun StudentProfileContent(
-    profile: StudentProfileModel,
-    onLogout: () -> Unit,
-    onViewAllAttendances: () -> Unit,
+fun TeacherProfileContent(
+    profile: TeacherProfileModel,
     avatarViewModel: AvatarViewModel
 ) {
     var selectedAvatarUri by remember { mutableStateOf<Uri?>(null) }
@@ -147,12 +91,10 @@ fun StudentProfileContent(
     val avatarLoadState by avatarViewModel.avatarLoadState.collectAsState()
 
     val displayAvatarUri = when (avatarLoadState) {
-        is AvatarLoadState.Success -> (avatarLoadState as AvatarLoadState.Success).avatarUri
-            ?: selectedAvatarUri
-
+        is AvatarLoadState.Success -> (avatarLoadState as AvatarLoadState.Success).avatarUri ?: selectedAvatarUri
         else -> selectedAvatarUri
     }
-
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -182,7 +124,6 @@ fun StudentProfileContent(
                     strokeWidth = 2.dp
                 )
             }
-
             avatarState is AvatarState.Loading -> {
                 Spacer(modifier = Modifier.height(8.dp))
                 CircularProgressIndicator(
@@ -190,7 +131,6 @@ fun StudentProfileContent(
                     strokeWidth = 2.dp
                 )
             }
-
             avatarState is AvatarState.Error -> {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -199,7 +139,6 @@ fun StudentProfileContent(
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-
             avatarLoadState is AvatarLoadState.Error -> {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -208,13 +147,12 @@ fun StudentProfileContent(
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-
             else -> {}
         }
-
+        
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = stringResource(R.string.profile_student_title),
+            text = stringResource(R.string.profile_teacher_title),
             style = MaterialTheme.typography.titleLarge
         )
         Text(
@@ -223,36 +161,50 @@ fun StudentProfileContent(
             color = Color.Gray
         )
         Spacer(modifier = Modifier.height(32.dp))
-        ProfileInfoBlock(label = stringResource(R.string.full_name), value = profile.fullName)
-        ProfileInfoBlock(label = stringResource(R.string.email), value = profile.email)
-        ProfileInfoBlock(label = stringResource(R.string.faculty), value = profile.faculty?.name)
-        ProfileInfoBlock(label = stringResource(R.string.course), value = profile.course.toString())
-        ProfileInfoBlock(label = stringResource(R.string.group), value = profile.group)
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            ProfileInfoBlock(
-                label = stringResource(R.string.classes_amount),
-                value = profile.classesAmount.toString(),
-                modifier = Modifier.weight(1f)
+        
+        ProfileInfoBlock(label = stringResource(R.string.full_name), value = profile.fullName ?: "")
+        ProfileInfoBlock(label = stringResource(R.string.email), value = profile.email ?: "")
+        ProfileInfoBlock(label = stringResource(R.string.role), value = profile.role ?: "")
+        
+        if (!profile.subjects.isNullOrEmpty()) {
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = stringResource(R.string.subjects),
+                style = MaterialTheme.typography.titleMedium
             )
-            Spacer(modifier = Modifier.width(12.dp))
-            IconButton(
-                onClick = onViewAllAttendances,
-                modifier = Modifier.size(40.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.info_ic),
-                    contentDescription = stringResource(R.string.view_all_attendances),
-                    modifier = Modifier.size(24.dp),
-                    tint = colorResource(R.color.red)
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            profile.subjects.forEach { subject ->
+                ProfileInfoBlock(
+                    label = stringResource(R.string.subject),
+                    value = subject.name ?: ""
                 )
             }
         }
-
+        
         Spacer(modifier = Modifier.height(32.dp))
-        AppButton(text = stringResource(R.string.logout), onClick = onLogout)
     }
 }
+
+@Composable
+fun ProfileInfoBlock(label: String, value: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(colorResource(R.color.light_gray))
+            .padding(16.dp)
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = Color.Gray
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyLarge
+        )
+    }
+} 

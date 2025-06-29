@@ -107,4 +107,6 @@
     <string name="approve">Подтвердить</string>
     <string name="all_applications_processed">Все заявки обработаны!</string>
     <string name="tap_to_view_profile">Нажмите для просмотра профиля</string>
+    <string name="role">Роль</string>
+    <string name="subject">Предмет</string>
 </resources>

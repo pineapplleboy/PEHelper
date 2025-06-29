@@ -83,7 +83,13 @@ class AvatarViewModel : ViewModel(), KoinComponent {
             try {
                 val multipartPart = ImageUtils.createAvatarMultipartPart(context, imageUri)
                 if (multipartPart != null) {
-                    val response = api.uploadAvatar(userId, multipartPart)
+                    val response = if (avatarId != null) {
+                        // Если у пользователя уже есть аватар, используем PUT для обновления
+                        api.updateAvatar(userId, multipartPart)
+                    } else {
+                        // Если аватара нет, используем POST для создания
+                        api.uploadAvatar(userId, multipartPart)
+                    }
                     
                     if (response.isSuccessful) {
                         _avatarState.value = AvatarState.Success
