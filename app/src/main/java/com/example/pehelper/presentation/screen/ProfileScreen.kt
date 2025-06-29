@@ -89,17 +89,7 @@ fun ProfileScreen(
                 )
             }
 
-            is ProfileState.SuccessStudent -> {
-                StudentProfileContent(
-                    profile = currentState.profile,
-                    onLogout = {
-                        authViewModel.logout()
-                        navController.navigate("auth") {
-                            popUpTo("student_profile") { inclusive = true }
-                        }
-                    }
-                )
-            }
+            is ProfileState.SuccessStudent -> { }
 
             else -> {}
         }
@@ -133,9 +123,9 @@ fun ProfileContent(profile: TeacherProfileModel, onLogout: () -> Unit) {
 }
 
 @Composable
-fun ProfileInfoBlock(label: String, value: String?) {
+fun ProfileInfoBlock(label: String, value: String?, modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clip(RoundedCornerShape(10.dp))

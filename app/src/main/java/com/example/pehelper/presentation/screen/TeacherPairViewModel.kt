@@ -2,8 +2,8 @@ package com.example.pehelper.presentation.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.pehelper.data.model.Subject
 import com.example.pehelper.data.model.TeacherPairModel
+import com.example.pehelper.data.model.Subject
 import com.example.pehelper.data.network.PEAPI
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,15 +19,15 @@ sealed class TeacherPairsState {
 }
 
 sealed class TeacherSubjectsState {
-	object Loading : TeacherSubjectsState()
+	data object Loading : TeacherSubjectsState()
 	data class Success(val subjects: List<Subject>) : TeacherSubjectsState()
 	data class Error(val error: String) : TeacherSubjectsState()
 }
 
 sealed class CreatePairState {
-	object Idle : CreatePairState()
-	object Loading : CreatePairState()
-	object Success : CreatePairState()
+	data object Idle : CreatePairState()
+	data object Loading : CreatePairState()
+	data object Success : CreatePairState()
 	data class Error(val error: String) : CreatePairState()
 }
 
@@ -62,7 +62,7 @@ class TeacherPairsViewModel : ViewModel(), KoinComponent {
 				val response = api.getTeacherSubjects()
 				_subjectsState.value = TeacherSubjectsState.Success(response.subjects)
 			} catch (e: Exception) {
-				_subjectsState.value = TeacherSubjectsState.Error(e.localizedMessage ?: "Ошибка загрузки предметов")
+				_subjectsState.value = TeacherSubjectsState.Error(e.localizedMessage ?: "Ошибка загрузки")
 			}
 		}
 	}
@@ -75,8 +75,8 @@ class TeacherPairsViewModel : ViewModel(), KoinComponent {
 				_createPairState.value = CreatePairState.Success
 				getPairs()
 			} catch (e: Exception) {
-				_createPairState.value = CreatePairState.Error(e.localizedMessage ?: "Ошибка создания пары")
+				_createPairState.value = CreatePairState.Error(e.localizedMessage ?: "Ошибка создания")
 			}
 		}
 	}
-}
+} 

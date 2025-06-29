@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.pehelper.R
 import com.example.pehelper.data.model.toLessonModel
-import com.example.pehelper.presentation.component.LessonCard
 import com.example.pehelper.presentation.component.TeacherLessonCard
 import org.koin.androidx.compose.koinViewModel
 

@@ -98,16 +98,3 @@ fun TeacherLessonCard(
 		}
 	}
 }
-
-@Preview
-@Composable
-fun TeacherLessonPreview() {
-	LessonCard(
-		lesson = LessonModel(
-			title = "Бодибилдинг",
-			time = "16:30 - 18:00",
-			teacherName = "Пронькин Александр Александрович",
-			isVisited = true
-		)
-	)
-}

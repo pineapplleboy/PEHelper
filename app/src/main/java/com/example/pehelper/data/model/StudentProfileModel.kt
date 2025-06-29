@@ -16,5 +16,6 @@ data class StudentProfileModel(
     @SerializedName("group") val group: String?,
     @SerializedName("faculty") val faculty: Faculty?,
     @SerializedName("classesAmount") val classesAmount: Int?,
-    @SerializedName("appointmentDate") val appointmentDate: String? = null
+    @SerializedName("appointmentDate") val appointmentDate: String? = null,
+    @SerializedName("avatarId") val avatarId: String? = null
 ) 

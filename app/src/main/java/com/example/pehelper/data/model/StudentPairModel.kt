@@ -6,12 +6,12 @@ import com.google.gson.annotations.SerializedName
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-data class TeacherPairsResponse(
+data class StudentPairsResponse(
 	@SerializedName("pairs")
-	val pairs: List<TeacherPairModel>
+	val pairs: List<StudentPairModel>
 )
 
-data class TeacherPairModel(
+data class StudentPairModel(
 	@SerializedName("id")
 	val id: String,
 	@SerializedName("pairNumber")
@@ -21,33 +21,33 @@ data class TeacherPairModel(
 	@SerializedName("subject")
 	val subject: Subject,
 	@SerializedName("date")
-	val date: String
+	val date: String,
+	@SerializedName("isAttended")
+	val isAttended: Boolean = false,
+	@SerializedName("status")
+	val status: String? = null
 )
 
-data class TeacherInfo(
-	@SerializedName("id")
+data class LessonModel(
 	val id: String,
-	@SerializedName("email")
-	val email: String,
-	@SerializedName("fullName")
-	val fullName: String,
-	@SerializedName("role")
-	val role: String,
-	@SerializedName("subjects")
-	val subjects: List<Subject>
+	val title: String,
+	val time: String,
+	val teacherName: String,
+	val isVisited: Boolean = false,
+	val status: String? = null
 )
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun TeacherPairModel.toLessonModel(): LessonModel {
+fun StudentPairModel.toLessonModel(): LessonModel {
 	val formattedTime = formatTime(date)
 	return LessonModel(
 		id = this.id,
-		title = subject.name ?: "Предмет не указан",
-		time = formattedTime,
-		teacherName = teacher.fullName,
-		isVisited = false,
-		status = null
-	)
+        title = subject.name ?: "Предмет не указан",
+        time = formattedTime,
+        teacherName = teacher.fullName,
+        isVisited = isAttended,
+        status = this.status
+    )
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -59,4 +59,4 @@ private fun formatTime(dateString: String): String {
 	} catch (e: Exception) {
 		"Время не указано"
 	}
-}
+} 

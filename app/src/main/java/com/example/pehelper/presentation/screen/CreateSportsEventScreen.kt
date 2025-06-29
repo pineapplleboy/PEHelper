@@ -26,6 +26,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import androidx.compose.material3.TextFieldDefaults
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -122,10 +123,15 @@ fun CreateSportsEventScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color.Transparent),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        containerColor = Color.Transparent,
-                        unfocusedBorderColor = Color.Transparent,
-                        focusedBorderColor = Color.Transparent
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        errorContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                        errorIndicatorColor = Color.Transparent
                     ),
                     singleLine = true
                 )
@@ -188,7 +194,6 @@ fun CreateSportsEventScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FieldBlock(label: String, value: String, onValueChange: (String) -> Unit, placeholder: String) {
     Column(
@@ -211,10 +216,15 @@ fun FieldBlock(label: String, value: String, onValueChange: (String) -> Unit, pl
             placeholder = { Text(placeholder, color = Color.LightGray) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                containerColor = Color.Transparent,
-                unfocusedBorderColor = Color.Transparent,
-                focusedBorderColor = Color.Transparent
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                disabledContainerColor = Color.Transparent,
+                errorContainerColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                errorIndicatorColor = Color.Transparent
             )
         )
     }

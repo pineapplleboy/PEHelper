@@ -11,6 +11,11 @@ import com.example.pehelper.data.model.SportsEventModel
 import com.example.pehelper.data.model.SportsEventsResponse
 import com.example.pehelper.data.model.TeacherPairsResponse
 import com.example.pehelper.data.model.TeacherSubjectsResponse
+import com.example.pehelper.data.model.StudentPairsResponse
+import com.example.pehelper.data.model.AttendanceStatusResponse
+import com.example.pehelper.data.model.AllAttendancesResponse
+import com.example.pehelper.data.model.StudentEventsResponse
+import com.example.pehelper.data.model.StudentApplicationResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -18,6 +23,8 @@ import retrofit2.http.DELETE
 import retrofit2.http.Path
 import retrofit2.http.PUT
 import retrofit2.http.Query
+import retrofit2.http.Multipart
+import retrofit2.http.Part
 
 interface PEAPI {
     @POST("/api/login")
@@ -37,6 +44,9 @@ interface PEAPI {
 
     @GET("/api/profile/curator")
     suspend fun getCuratorProfile(): retrofit2.Response<CuratorProfileModel>
+
+    @GET("/api/profile/all-attendances")
+    suspend fun getAllAttendances(): retrofit2.Response<AllAttendancesResponse>
 
     @GET("/api/session")
     suspend fun getSession(): retrofit2.Response<SessionResponse>
@@ -68,6 +78,40 @@ interface PEAPI {
 
     @POST("/api/teacher/pairs")
     suspend fun createTeacherPair(@Query("subjectId") subjectId: String)
+
+    @GET("/api/student/pairs")
+    suspend fun getStudentPairs(): StudentPairsResponse
+
+    @GET("/api/student/events")
+    suspend fun getStudentEvents(): StudentEventsResponse
+
+    @GET("/api/student/application/{id}")
+    suspend fun getStudentApplication(@Path("id") eventId: String): StudentApplicationResponse
+
+    @POST("/api/student/application/{id}")
+    suspend fun createStudentApplication(@Path("id") eventId: String): retrofit2.Response<Unit>
+
+    @DELETE("/api/student/application/{id}")
+    suspend fun deleteStudentApplication(@Path("id") eventId: String): retrofit2.Response<Unit>
+
+    @POST("/api/student/attendance/{pairId}")
+    suspend fun markAttendance(@Path("pairId") pairId: String): retrofit2.Response<Unit>
+
+    @DELETE("/api/student/attendance/{pairId}")
+    suspend fun cancelAttendance(@Path("pairId") pairId: String): retrofit2.Response<Unit>
+
+    @GET("/api/student/attendance/{pairId}")
+    suspend fun getAttendanceStatus(@Path("pairId") pairId: String): AttendanceStatusResponse
+
+    @Multipart
+    @POST("/api/avatar")
+    suspend fun uploadAvatar(
+        @Query("id") userId: String,
+        @Part avatar: okhttp3.MultipartBody.Part
+    ): retrofit2.Response<Unit>
+
+    @GET("/api/avatar")
+    suspend fun getAvatar(@Query("id") userId: String): retrofit2.Response<okhttp3.ResponseBody>
 }
 
 data class SessionResponse(

@@ -1,6 +1,5 @@
 package com.example.pehelper.presentation.component
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -25,7 +24,6 @@ fun AppButton(
     Button(
         onClick = onClick,
         modifier = modifier
-            .fillMaxWidth()
             .padding(horizontal = 24.dp),
         shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.buttonColors(

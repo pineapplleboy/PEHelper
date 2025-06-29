@@ -29,6 +29,9 @@ import com.example.pehelper.presentation.screen.CreateSportsEventScreen
 import com.example.pehelper.presentation.screen.LessonStudentsScreen
 import com.example.pehelper.presentation.screen.SportLessonsScreen
 import com.example.pehelper.presentation.screen.SportsEventDetailScreen
+import com.example.pehelper.presentation.screen.StudentPairsScreen
+import com.example.pehelper.presentation.screen.AllAttendancesScreen
+import com.example.pehelper.presentation.screen.StudentEventDetailScreen
 import com.example.pehelper.ui.theme.PEHelperTheme
 
 class MainActivity : ComponentActivity() {
@@ -56,6 +59,17 @@ class MainActivity : ComponentActivity() {
                         composable("curator_profile") { CuratorProfileScreen(navController = navController) }
                         composable("sports_organizer_profile") {
                             SportsOrganizerProfileScreen(
+                                navController = navController
+                            )
+                        }
+                        composable("student_pairs") {
+                            StudentPairsScreen(
+                                onProfileClick = {
+                                    navController.navigate("student_profile")
+                                },
+                                onEventClick = { eventId ->
+                                    navController.navigate("student_event_detail/$eventId")
+                                },
                                 navController = navController
                             )
                         }
@@ -111,6 +125,16 @@ class MainActivity : ComponentActivity() {
                                 onDeleted = {
                                     navController.popBackStack("sports_events", false)
                                 }
+                            )
+                        }
+                        composable("all_attendances") {
+                            AllAttendancesScreen(navController = navController)
+                        }
+                        composable("student_event_detail/{eventId}") { backStackEntry ->
+                            val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
+                            StudentEventDetailScreen(
+                                eventId = eventId,
+                                onBackClick = { navController.popBackStack() }
                             )
                         }
                     }
