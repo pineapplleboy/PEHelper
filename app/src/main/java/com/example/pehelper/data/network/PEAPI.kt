@@ -57,6 +57,9 @@ interface PEAPI {
     @GET("/api/sports/events")
     suspend fun getSportsEvents(): SportsEventsResponse
 
+    @GET("/api/curator/events")
+    suspend fun getCuratorEvents(): SportsEventsResponse
+
     @GET("/api/sports/events/{id}")
     suspend fun getSportsEventById(@Path("id") id: String): SportsEventModel
 

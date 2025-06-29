@@ -40,13 +40,16 @@ fun SplashScreen(
             is AuthState.Success -> {
                 val role = (authState as AuthState.Success).role
                 when (role) {
-                    "STUDENT" -> navController.navigate("student_pairs") {
+                    "Student" -> navController.navigate("student_pairs") {
                         popUpTo("splash") { inclusive = true }
                     }
-                    "TEACHER" -> navController.navigate("teacher_pairs") {
+                    "Teacher" -> navController.navigate("teacher_pairs") {
                         popUpTo("splash") { inclusive = true }
                     }
-                    "SPORTS_ORGANIZER" -> navController.navigate("sports_events") {
+                    "SportsOrganizer" -> navController.navigate("sports_events") {
+                        popUpTo("splash") { inclusive = true }
+                    }
+                    "Curator" -> navController.navigate("curator_events") {
                         popUpTo("splash") { inclusive = true }
                     }
                     else -> navController.navigate("auth") {
