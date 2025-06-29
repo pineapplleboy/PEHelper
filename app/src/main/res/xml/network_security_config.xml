@@ -4,5 +4,8 @@
 		<domain includeSubdomains="true">localhost</domain>
 		<domain includeSubdomains="true">127.0.0.1</domain>
 		<domain includeSubdomains="true">10.0.2.2</domain>
+		<domain includeSubdomains="true">0a7c-77-110-108-130.ngrok-free.app</domain>
+		<domain includeSubdomains="true">ada2-77-110-108-130.ngrok-free.app</domain>
+		<domain includeSubdomains="true">b084-77-110-108-130.ngrok-free.app</domain>
 	</domain-config>
 </network-security-config>

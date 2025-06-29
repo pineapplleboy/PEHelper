@@ -7,13 +7,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
@@ -32,25 +34,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.pehelper.presentation.component.SwipeableApplicationCard
-import com.example.pehelper.R
-import org.koin.androidx.compose.koinViewModel
 import androidx.navigation.NavController
+import com.example.pehelper.R
+import com.example.pehelper.presentation.component.SwipeableApplicationCard
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.delay
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
+import org.koin.androidx.compose.koinViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -144,9 +140,11 @@ fun CuratorApplicationsScreen(
         SwipeRefresh(
             state = swipeRefreshState,
             onRefresh = {
-                isRefreshing = true
-                currentApplicationIndex = 0
-                viewModel.getApplications()
+                if (selectedTab.value == 0) {
+                    isRefreshing = true
+                    currentApplicationIndex = 0
+                    viewModel.getApplications()
+                }
             }
         ) {
             LaunchedEffect(isRefreshing) {
@@ -155,84 +153,14 @@ fun CuratorApplicationsScreen(
                     isRefreshing = false
                 }
             }
-            
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
             ) {
-                when (val state = applicationsState) {
-                    is ApplicationsListState.Loading -> {
-                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text(stringResource(id = R.string.loading))
-                        }
-                    }
-                    is ApplicationsListState.Error -> {
-                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text(stringResource(id = R.string.error_with_colon, state.error), color = MaterialTheme.colorScheme.error)
-                        }
-                    }
-                    is ApplicationsListState.Success -> {
-                        if (state.applications.isEmpty()) {
-                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Text(stringResource(id = R.string.no_applications))
-                            }
-                        } else if (currentApplicationIndex >= state.applications.size) {
-                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Text(
-                                    text = stringResource(id = R.string.all_applications_processed),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                                )
-                            }
-                        } else {
-                            val currentApplication = state.applications[currentApplicationIndex]
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(16.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                SwipeableApplicationCard(
-                                    application = currentApplication,
-                                    onApprove = {
-                                        viewModel.approveApplication(
-                                            currentApplication.event.id,
-                                            currentApplication.profile.id ?: ""
-                                        )
-                                    },
-                                    onReject = {
-                                        viewModel.rejectApplication(
-                                            currentApplication.event.id,
-                                            currentApplication.profile.id ?: ""
-                                        )
-                                    },
-                                    isActionLoading = actionState is ApplicationActionState.Loading,
-                                    onProfileClick = { studentId ->
-                                        navController?.navigate("curator_student_profile/$studentId")
-                                    }
-                                )
-        if (selectedTab.value == 0) {
-            SwipeRefresh(
-                state = swipeRefreshState,
-                onRefresh = {
-                    isRefreshing = true
-                    currentApplicationIndex = 0
-                    viewModel.getApplications()
-                }
-            ) {
-                LaunchedEffect(isRefreshing) {
-                    if (isRefreshing) {
-                        delay(1000)
-                        isRefreshing = false
-                    }
-                }
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                ) {
+                if (selectedTab.value == 0) {
+                    // Вкладка "Заявки"
                     when (val state = applicationsState) {
                         is ApplicationsListState.Loading -> {
                             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -240,9 +168,12 @@ fun CuratorApplicationsScreen(
                             }
                         }
 
-                        is ApplicationsListState.Error   -> {
+                        is ApplicationsListState.Error -> {
                             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Text(stringResource(id = R.string.error_with_colon, state.error), color = MaterialTheme.colorScheme.error)
+                                Text(
+                                    stringResource(id = R.string.error_with_colon, state.error),
+                                    color = MaterialTheme.colorScheme.error
+                                )
                             }
                         }
 
@@ -252,7 +183,6 @@ fun CuratorApplicationsScreen(
                                     Text(stringResource(id = R.string.no_applications))
                                 }
                             } else if (currentApplicationIndex >= state.applications.size) {
-
                                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                     Text(
                                         text = stringResource(id = R.string.all_applications_processed),
@@ -287,46 +217,46 @@ fun CuratorApplicationsScreen(
                                             navController?.navigate("curator_student_profile/$studentId")
                                         }
                                     )
+                                    
+                                    androidx.compose.material3.Button(
+                                        onClick = onGroupsClick,
+                                        modifier = Modifier
+                                            .align(Alignment.BottomEnd)
+                                            .padding(16.dp)
+                                            .clip(RoundedCornerShape(25.dp)),
+                                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                            containerColor = colorResource(id = R.color.red)
+                                        ),
+                                        elevation = androidx.compose.material3.ButtonDefaults.buttonElevation(
+                                            defaultElevation = 8.dp,
+                                            pressedElevation = 4.dp
+                                        )
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.students),
+                                            contentDescription = null,
+                                            tint = Color.White,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = "ГРУППЫ",
+                                            color = Color.White,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 14.sp,
+                                            letterSpacing = 0.5.sp
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
-                }
-
-                androidx.compose.material3.Button(
-                    onClick = onGroupsClick,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(16.dp)
-                        .clip(RoundedCornerShape(25.dp)),
-                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.red)
-                    ),
-                    elevation = androidx.compose.material3.ButtonDefaults.buttonElevation(
-                        defaultElevation = 8.dp,
-                        pressedElevation = 4.dp
-                    )
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.students),
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "ГРУППЫ",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
-                        letterSpacing = 0.5.sp
+                } else {
+                    CuratorLessonsContent(
+                        navController = navController
                     )
                 }
             }
-        } else {
-            CuratorLessonsContent(
-                navController = navController
-            )
         }
     }
-} 
+}

@@ -97,7 +97,7 @@ class LessonStudentsViewModel(private val pairId: String) : ViewModel(), KoinCom
 	private fun connectWebSocket() {
 		viewModelScope.launch(Dispatchers.IO) {
 			val client = OkHttpClient()
-			val request = Request.Builder().url("ws://10.0.2.2:8181").build()
+			val request = Request.Builder().url("ws://0a7c-77-110-108-130.ngrok-free.app").build()
 			webSocket = client.newWebSocket(request, object : WebSocketListener() {
 				override fun onOpen(webSocket: WebSocket, response: okhttp3.Response) {
 					Log.d("WS", "WebSocket opened: ${'$'}response")

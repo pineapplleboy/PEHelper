@@ -62,7 +62,7 @@ fun StudentPairsScreen(
 	val eventsState by viewModel.eventsState.collectAsState()
 	val attendanceState by viewModel.attendanceState.collectAsState()
 	val applicationState by viewModel.applicationState.collectAsState()
-	var currentViewType by remember { mutableStateOf(StudentViewType.PAIRS) }
+	var currentViewType by remember { mutableStateOf(StudentViewType.EVENTS) }
 	var isRefreshing by remember { mutableStateOf(false) }
 
 	val swipeRefreshState = rememberSwipeRefreshState(

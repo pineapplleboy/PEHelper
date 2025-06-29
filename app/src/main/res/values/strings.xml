@@ -8,6 +8,7 @@
     <string name="status_pending">Статус: На рассмотрении</string>
     <string name="status_accepted">Статус: Принято</string>
     <string name="status_declined">Статус: Отклонено</string>
+    <string name="status_credited">Статус: Подтверждено</string>
     <string name="students_attendance_title">Отметившиеся студенты:</string>
     <string name="pending_applications">Ожидающие заявки:</string>
     <string name="no_students_attendance">Нет отметившихся студентов</string>

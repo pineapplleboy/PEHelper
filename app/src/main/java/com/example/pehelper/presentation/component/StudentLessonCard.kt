@@ -139,7 +139,7 @@ fun StudentLessonCard(
 private fun shouldShowAttendanceButton(status: String?): Boolean {
 	return when (status?.lowercase()) {
 		"didnotvisit", "pending" -> true
-		"accepted", "declined" -> false
+		"accepted", "declined", "credited" -> false
 		else -> true
 	}
 }
@@ -160,6 +160,7 @@ private fun getStatusText(status: String): String {
 		"accepted" -> stringResource(id = R.string.status_accepted_text)
 		"declined" -> stringResource(id = R.string.status_declined_text)
 		"didnotvisit" -> stringResource(id = R.string.status_did_not_visit_text)
+		"credited" -> "Подтверждено"
 		else -> status
 	}
 }
@@ -171,6 +172,7 @@ private fun getStatusColor(status: String): Color {
 		"accepted" -> Color(0xFF4CAF50)
 		"declined" -> Color(0xFFF44336)
 		"didnotvisit" -> Color(0xFF9E9E9E)
+		"credited" -> Color(0xFF4CAF50)
 		else -> Color(0xFF666666)
 	}
 }

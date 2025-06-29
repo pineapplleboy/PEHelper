@@ -260,11 +260,13 @@ fun StudentAttendanceCard(
                     text = when (status) {
                         "Accepted" -> stringResource(id = R.string.status_accepted)
                         "Declined" -> stringResource(id = R.string.status_declined)
+                        "Credited" -> stringResource(id = R.string.status_credited)
                         else -> stringResource(id = R.string.status_pending)
                     },
                     color = when (status) {
                         "Accepted" -> colorResource(id = R.color.status_accepted)
                         "Declined" -> colorResource(id = R.color.status_declined)
+                        "Credited" -> colorResource(id = R.color.status_accepted)
                         else -> colorResource(id = R.color.status_pending)
                     },
                     fontSize = 14.sp,

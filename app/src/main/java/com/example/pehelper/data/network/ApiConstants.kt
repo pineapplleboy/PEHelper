@@ -1,7 +1,7 @@
 package com.example.pehelper.data.network
 
 object ApiConstants {
-    const val BASE_URL = "https://10.0.2.2:7131"
+    const val BASE_URL = "https://b084-77-110-108-130.ngrok-free.app"
     
     // Auth endpoints
     const val LOGIN = "/api/login"

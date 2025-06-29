@@ -127,6 +127,12 @@ fun StudentCard(
 							text = "Принят",
 							fontSize = 12.sp
 						)
+					} else if (status == "Credited") {
+						Spacer(modifier = Modifier.size(8.dp))
+						Text(
+							text = "Подтверждено",
+							fontSize = 12.sp
+						)
 					} else if (status == "Pending"){
 						Box(
 							modifier = Modifier
