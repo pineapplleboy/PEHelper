@@ -26,7 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -38,11 +41,17 @@ import androidx.navigation.NavController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.delay
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CuratorApplicationsScreen(
     onProfileClick: () -> Unit = {},
+    onGroupsClick: () -> Unit = {},
     viewModel: CuratorApplicationsViewModel = koinViewModel(),
     navController: NavController? = null
 ) {
@@ -129,7 +138,6 @@ fun CuratorApplicationsScreen(
                                 Text(stringResource(id = R.string.no_applications))
                             }
                         } else if (currentApplicationIndex >= state.applications.size) {
-
                             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                 Text(
                                     text = stringResource(id = R.string.all_applications_processed),
@@ -167,6 +175,36 @@ fun CuratorApplicationsScreen(
                             }
                         }
                     }
+                }
+
+                androidx.compose.material3.Button(
+                    onClick = onGroupsClick,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp)
+                        .clip(RoundedCornerShape(25.dp)),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = colorResource(id = R.color.red)
+                    ),
+                    elevation = androidx.compose.material3.ButtonDefaults.buttonElevation(
+                        defaultElevation = 8.dp,
+                        pressedElevation = 4.dp
+                    )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.students),
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "ГРУППЫ",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        letterSpacing = 0.5.sp
+                    )
                 }
             }
         }

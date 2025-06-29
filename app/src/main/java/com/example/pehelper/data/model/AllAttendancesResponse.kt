@@ -8,7 +8,7 @@ data class AllAttendancesResponse(
     @SerializedName("pairs")
     val pairs: List<PairAttendance>,
     @SerializedName("otherActivities")
-    val otherActivities: List<Any> = emptyList(),
+    val otherActivities: List<OtherActivity> = emptyList(),
     @SerializedName("events")
     val events: List<EventAttendance>
 )
@@ -17,20 +17,18 @@ data class PairAttendance(
     @SerializedName("classesAmount")
     val classesAmount: Int,
     @SerializedName("pair")
-    val pair: PairInfo,
+    val pair: TeacherPairModel,
     @SerializedName("status")
     val status: String
 )
 
-data class PairInfo(
+data class OtherActivity(
     @SerializedName("id")
     val id: String,
-    @SerializedName("pairNumber")
-    val pairNumber: Int,
-    @SerializedName("teacher")
-    val teacher: TeacherInfo,
-    @SerializedName("subject")
-    val subject: Subject,
+    @SerializedName("comment")
+    val comment: String,
+    @SerializedName("classesAmount")
+    val classesAmount: Int,
     @SerializedName("date")
     val date: String
 )

@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pehelper.R
 import org.koin.androidx.compose.koinViewModel
+import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
@@ -90,7 +91,9 @@ fun SportsEventDetailScreen(
             is EventDetailState.Success -> {
                 val event = (state as EventDetailState.Success).event
                 val dateTime = try {
-                    OffsetDateTime.parse(event.date)
+                    val utcDateTime = LocalDateTime.parse(event.date.replace("Z", ""))
+                    val utcZonedDateTime = utcDateTime.atZone(java.time.ZoneOffset.UTC)
+                    utcZonedDateTime.withZoneSameInstant(java.time.ZoneId.systemDefault())
                 } catch (e: Exception) {
                     null
                 }

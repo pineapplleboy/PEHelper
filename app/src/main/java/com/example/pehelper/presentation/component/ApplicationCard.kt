@@ -133,9 +133,11 @@ private fun formatEventDate(dateString: String?): String {
     }
     
     return try {
-        val dateTime = LocalDateTime.parse(dateString.replace("Z", ""))
+        val utcDateTime = LocalDateTime.parse(dateString.replace("Z", ""))
+        val utcZonedDateTime = utcDateTime.atZone(java.time.ZoneOffset.UTC)
+        val localZonedDateTime = utcZonedDateTime.withZoneSameInstant(java.time.ZoneId.systemDefault())
         val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
-        dateTime.format(formatter)
+        localZonedDateTime.format(formatter)
     } catch (e: Exception) {
         dateString
     }

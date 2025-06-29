@@ -89,9 +89,11 @@
     <string name="view_all_attendances">Просмотр всех посещений</string>
     <string name="all_attendances_title">Все посещения</string>
     <string name="pairs_section">Занятия</string>
+    <string name="other_activities_section">Другие активности</string>
     <string name="events_section">Мероприятия</string>
     <string name="no_attendances">Нет посещений</string>
     <string name="pair_number">Пара №%1$d</string>
+    <string name="other_activity">Другая активность</string>
     <string name="event_name">Мероприятие: %1$s</string>
     <string name="attendance_status_accepted">Посещено</string>
     <string name="attendance_status_pending">На рассмотрении</string>

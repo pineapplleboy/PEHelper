@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pehelper.R
 import com.example.pehelper.data.model.SportsEventModel
+import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import androidx.compose.foundation.clickable
@@ -34,7 +35,9 @@ import androidx.compose.foundation.clickable
 @Composable
 fun SportsEventCard(event: SportsEventModel, onClick: (() -> Unit)? = null) {
     val dateTime = try {
-        OffsetDateTime.parse(event.date)
+        val utcDateTime = LocalDateTime.parse(event.date.replace("Z", ""))
+        val utcZonedDateTime = utcDateTime.atZone(java.time.ZoneOffset.UTC)
+        utcZonedDateTime.withZoneSameInstant(java.time.ZoneId.systemDefault())
     } catch (e: Exception) {
         null
     }

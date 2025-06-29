@@ -41,6 +41,7 @@ import androidx.navigation.NavController
 import com.example.pehelper.R
 import com.example.pehelper.data.model.EventAttendance
 import com.example.pehelper.data.model.PairAttendance
+import com.example.pehelper.data.model.OtherActivity
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.delay
@@ -163,6 +164,21 @@ fun AllAttendancesContent(data: com.example.pehelper.data.model.AllAttendancesRe
             }
         }
 
+        if (data.otherActivities.isNotEmpty()) {
+            item {
+                Text(
+                    text = stringResource(id = R.string.other_activities_section),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                )
+            }
+
+            items(data.otherActivities) { otherActivity ->
+                OtherActivityCard(otherActivity = otherActivity)
+            }
+        }
+
         if (data.events.isNotEmpty()) {
             item {
                 Text(
@@ -178,7 +194,7 @@ fun AllAttendancesContent(data: com.example.pehelper.data.model.AllAttendancesRe
             }
         }
 
-        if (data.pairs.isEmpty() && data.events.isEmpty()) {
+        if (data.pairs.isEmpty() && data.events.isEmpty() && data.otherActivities.isEmpty()) {
             item {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
@@ -254,6 +270,56 @@ fun PairAttendanceCard(pairAttendance: PairAttendance) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
+fun OtherActivityCard(otherActivity: OtherActivity) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(id = R.color.light_gray)
+        ),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(id = R.string.other_activity),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (otherActivity.comment.isNotEmpty()) {
+                Text(
+                    text = otherActivity.comment,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+            }
+
+            Text(
+                text = "Дата: ${formatDate(otherActivity.date)}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = colorResource(id = R.color.gray)
+            )
+
+            Text(
+                text = "Количество занятий: ${otherActivity.classesAmount}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = colorResource(id = R.color.gray)
+            )
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
 fun EventAttendanceCard(eventAttendance: EventAttendance) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -308,9 +374,11 @@ fun EventAttendanceCard(eventAttendance: EventAttendance) {
 @RequiresApi(Build.VERSION_CODES.O)
 private fun formatDate(dateString: String): String {
     return try {
-        val dateTime = LocalDateTime.parse(dateString.replace("Z", ""))
+        val utcDateTime = LocalDateTime.parse(dateString.replace("Z", ""))
+        val utcZonedDateTime = utcDateTime.atZone(java.time.ZoneOffset.UTC)
+        val localZonedDateTime = utcZonedDateTime.withZoneSameInstant(java.time.ZoneId.systemDefault())
         val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
-        dateTime.format(formatter)
+        localZonedDateTime.format(formatter)
     } catch (e: Exception) {
         "Дата не указана"
     }

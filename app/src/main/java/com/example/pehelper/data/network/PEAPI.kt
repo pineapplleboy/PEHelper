@@ -19,6 +19,8 @@ import com.example.pehelper.data.model.StudentEventsResponse
 import com.example.pehelper.data.model.StudentApplicationResponse
 import com.example.pehelper.data.model.CuratorApplicationsResponse
 import com.example.pehelper.data.model.CuratorStudentProfileResponse
+import com.example.pehelper.data.model.CuratorGroupResponse
+import com.example.pehelper.data.model.CreateStudentActivityRequest
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -155,6 +157,15 @@ interface PEAPI {
 
     @GET("/api/curator/profile/{studentId}")
     suspend fun getCuratorStudentProfile(@Path("studentId") studentId: String): CuratorStudentProfileResponse
+
+    @GET("/api/curator/group")
+    suspend fun getCuratorGroup(@Query("groupNumber") groupNumber: String): CuratorGroupResponse
+
+    @POST("/api/curator/activity/student")
+    suspend fun createStudentActivity(
+        @Query("studentId") studentId: String,
+        @Body request: CreateStudentActivityRequest
+    ): retrofit2.Response<Unit>
 }
 
 data class SessionResponse(

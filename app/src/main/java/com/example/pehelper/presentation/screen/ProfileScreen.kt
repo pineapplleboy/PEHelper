@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -178,6 +179,7 @@ fun SubjectsBlock(subjects: List<Subject>) {
 @Composable
 fun CuratorProfileScreen(
     navController: NavController,
+    onBack: () -> Unit,
     authViewModel: AuthViewModel = koinViewModel(),
     profileViewModel: ProfileViewModel = koinViewModel()
 ) {
@@ -218,6 +220,20 @@ fun CuratorProfileScreen(
             }
 
             else -> {}
+        }
+
+        IconButton(
+            onClick = onBack,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp, top = 16.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.back_arrow_ic),
+                contentDescription = stringResource(id = R.string.back),
+                tint = colorResource(id = R.color.black),
+                modifier = Modifier.size(28.dp)
+            )
         }
     }
 }

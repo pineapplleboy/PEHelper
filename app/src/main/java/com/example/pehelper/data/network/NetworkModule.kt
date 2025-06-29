@@ -91,7 +91,7 @@ val networkModule = module {
 
     single(named("refreshApi")) {
         Retrofit.Builder()
-            .baseUrl("https://10.0.2.2:7131")
+            .baseUrl(ApiConstants.BASE_URL)
             .client(get(named("refreshClient")))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -100,7 +100,7 @@ val networkModule = module {
 
     single {
         Retrofit.Builder()
-            .baseUrl("https://10.0.2.2:7131")
+            .baseUrl(ApiConstants.BASE_URL)
             .client(get())
             .addConverterFactory(GsonConverterFactory.create())
             .build()

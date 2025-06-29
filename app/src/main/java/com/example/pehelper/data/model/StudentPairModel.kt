@@ -53,9 +53,11 @@ fun StudentPairModel.toLessonModel(): LessonModel {
 @RequiresApi(Build.VERSION_CODES.O)
 private fun formatTime(dateString: String): String {
 	return try {
-		val dateTime = LocalDateTime.parse(dateString.replace("Z", ""))
+		val utcDateTime = LocalDateTime.parse(dateString.replace("Z", ""))
+		val utcZonedDateTime = utcDateTime.atZone(java.time.ZoneOffset.UTC)
+		val localZonedDateTime = utcZonedDateTime.withZoneSameInstant(java.time.ZoneId.systemDefault())
 		val formatter = DateTimeFormatter.ofPattern("HH:mm")
-		dateTime.format(formatter)
+		localZonedDateTime.format(formatter)
 	} catch (e: Exception) {
 		"Время не указано"
 	}

@@ -58,7 +58,12 @@ class MainActivity : ComponentActivity() {
                         composable("auth") { AuthScreen(navController = navController) }
                         composable("profile") { ProfileScreen(navController = navController) }
                         composable("student_profile") { StudentProfileScreen(navController = navController) }
-                        composable("curator_profile") { CuratorProfileScreen(navController = navController) }
+                        composable("curator_profile") { 
+                            CuratorProfileScreen(
+                                navController = navController,
+                                onBack = { navController.popBackStack() }
+                            ) 
+                        }
                         composable("sports_organizer_profile") {
                             SportsOrganizerProfileScreen(
                                 navController = navController
@@ -144,7 +149,31 @@ class MainActivity : ComponentActivity() {
                                 onProfileClick = {
                                     navController.navigate("curator_profile")
                                 },
+                                onGroupsClick = {
+                                    navController.navigate("curator_groups_input")
+                                },
                                 navController = navController
+                            )
+                        }
+                        composable("curator_groups_input") {
+                            com.example.pehelper.presentation.screen.CuratorGroupInputScreen(
+                                onBack = { navController.popBackStack() },
+                                onGroupSelected = { groupNumber ->
+                                    navController.navigate("curator_group_detail/$groupNumber")
+                                }
+                            )
+                        }
+                        composable(
+                            "curator_group_detail/{groupNumber}",
+                            arguments = listOf(navArgument("groupNumber") { type = NavType.StringType })
+                        ) { backStackEntry ->
+                            val groupNumber = backStackEntry.arguments?.getString("groupNumber") ?: ""
+                            com.example.pehelper.presentation.screen.CuratorGroupDetailScreen(
+                                groupNumber = groupNumber,
+                                onBack = { navController.popBackStack() },
+                                onStudentClick = { studentId ->
+                                    navController.navigate("curator_student_profile/$studentId")
+                                }
                             )
                         }
                         composable(

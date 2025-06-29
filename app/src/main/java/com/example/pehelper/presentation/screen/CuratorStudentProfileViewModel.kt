@@ -12,7 +12,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 sealed class CuratorStudentProfileState {
-    data object Loading : CuratorStudentProfileState()
+    object Loading : CuratorStudentProfileState()
     data class Success(val data: CuratorStudentProfileResponse) : CuratorStudentProfileState()
     data class Error(val error: String) : CuratorStudentProfileState()
 }
