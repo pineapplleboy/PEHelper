@@ -2,6 +2,7 @@ package com.example.pehelper.presentation.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,13 +54,12 @@ fun LessonStudentsScreen(
 	navController: NavController? = null
 ) {
 	val viewModel: LessonStudentsViewModel = koinViewModel { parametersOf(lessonId) }
-	val avatarViewModel: AvatarViewModel = koinViewModel()
 	val pending by viewModel.pending.collectAsState()
 	val solved by viewModel.solved.collectAsState()
 	val isSearching = remember { mutableStateOf(false) }
 	val searchText = remember { mutableStateOf("") }
 	val selectedTab = remember { mutableStateOf(0) }
-
+	val focusManager = LocalFocusManager.current
 	Scaffold(
 		topBar = {
 			Row(
@@ -92,7 +94,8 @@ fun LessonStudentsScreen(
 						value = searchText.value,
 						onValueChange = { searchText.value = it },
 						placeholder = { Text("Поиск...") },
-						modifier = Modifier.weight(1f)
+						modifier = Modifier.weight(1f),
+						singleLine = true
 					)
 					IconButton(onClick = {
 						isSearching.value = false
@@ -110,53 +113,62 @@ fun LessonStudentsScreen(
 		Column(
 			modifier = Modifier
 				.fillMaxSize()
-				.padding(padding)
+				.padding(padding).clickable(
+					indication = null,
+					interactionSource = remember { MutableInteractionSource() }
+				) {
+					focusManager.clearFocus()
+				}
 		) {
-			Row(
-				modifier = Modifier
-					.fillMaxWidth()
-					.padding(horizontal = 32.dp),
-				horizontalArrangement = Arrangement.SpaceBetween
-			) {
-				Column(
+			val isSearchActive = searchText.value.isNotBlank()
+			if (!isSearchActive) {
+				Row(
 					modifier = Modifier
-						.weight(1f)
-						.clickable { selectedTab.value = 0 },
-					horizontalAlignment = Alignment.CenterHorizontally
+						.fillMaxWidth()
+						.padding(horizontal = 32.dp),
+					horizontalArrangement = Arrangement.SpaceBetween
 				) {
-					Text(
-						text = "В ожидании",
-						color = if (selectedTab.value == 0) Color.Black else Color.Black.copy(alpha = 0.4f),
-						fontWeight = if (selectedTab.value == 0) FontWeight.Bold else FontWeight.Normal
-					)
-					Box(
+					Column(
 						modifier = Modifier
-							.fillMaxWidth()
-							.height(2.dp)
-							.background(if (selectedTab.value == 0) Color.Black else Color.Transparent)
-					)
-				}
-				Column(
-					modifier = Modifier
-						.weight(1f)
-						.clickable { selectedTab.value = 1 },
-					horizontalAlignment = Alignment.CenterHorizontally
-				) {
-					Text(
-						text = "Обработанные",
-						color = if (selectedTab.value == 1) Color.Black else Color.Black.copy(alpha = 0.4f),
-						fontWeight = if (selectedTab.value == 1) FontWeight.Bold else FontWeight.Normal
-					)
-					Box(
+							.weight(1f)
+							.clickable { selectedTab.value = 0 },
+						horizontalAlignment = Alignment.CenterHorizontally
+					) {
+						Text(
+							text = "В ожидании",
+							color = if (selectedTab.value == 0) Color.Black else Color.Black.copy(alpha = 0.4f),
+							fontWeight = if (selectedTab.value == 0) FontWeight.Bold else FontWeight.Normal
+						)
+						Box(
+							modifier = Modifier
+								.fillMaxWidth()
+								.height(2.dp)
+								.background(if (selectedTab.value == 0) Color.Black else Color.Transparent)
+						)
+					}
+					Column(
 						modifier = Modifier
-							.fillMaxWidth()
-							.height(2.dp)
-							.background(if (selectedTab.value == 1) Color.Black else Color.Transparent)
-					)
+							.weight(1f)
+							.clickable { selectedTab.value = 1 },
+						horizontalAlignment = Alignment.CenterHorizontally
+					) {
+						Text(
+							text = "Обработанные",
+							color = if (selectedTab.value == 1) Color.Black else Color.Black.copy(alpha = 0.4f),
+							fontWeight = if (selectedTab.value == 1) FontWeight.Bold else FontWeight.Normal
+						)
+						Box(
+							modifier = Modifier
+								.fillMaxWidth()
+								.height(2.dp)
+								.background(if (selectedTab.value == 1) Color.Black else Color.Transparent)
+						)
+					}
 				}
+				Spacer(modifier = Modifier.height(8.dp))
 			}
-			Spacer(modifier = Modifier.height(8.dp))
-			val students = if (selectedTab.value == 0) pending else solved
+
+			val students = if (isSearchActive) pending + solved else if (selectedTab.value == 0) pending else solved
 			val filtered = if (searchText.value.isBlank()) students else students.filter { it.student?.name?.contains(searchText.value, ignoreCase = true) == true }
 			LazyColumn(
 				modifier = Modifier

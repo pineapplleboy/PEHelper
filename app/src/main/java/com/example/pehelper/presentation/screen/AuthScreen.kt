@@ -46,7 +46,8 @@ fun AuthScreen(
     ) {
         TitleField(
             loginText = stringResource(R.string.login),
-            accessText = stringResource(R.string.enter_for_access)
+            accessText = stringResource(R.string.enter_for_access),
+            modifier = Modifier.padding(start = 24.dp, end = 24.dp)
         )
         InputField(
             hint = stringResource(R.string.email),

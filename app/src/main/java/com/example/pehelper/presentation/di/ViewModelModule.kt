@@ -7,7 +7,6 @@ import com.example.pehelper.presentation.screen.CuratorApplicationsViewModel
 import com.example.pehelper.presentation.screen.ProfileViewModel
 import com.example.pehelper.presentation.screen.SportsEventsViewModel
 import com.example.pehelper.presentation.screen.StudentEventDetailViewModel
-import com.example.pehelper.presentation.screen.StudentPairsViewModel
 import com.example.pehelper.presentation.screen.StudentProfileViewModel
 import com.example.pehelper.presentation.screen.TeacherPairsViewModel
 import com.example.pehelper.presentation.viewmodel.LessonStudentsViewModel
@@ -28,4 +27,5 @@ val viewModelModule = module {
     viewModel { CuratorApplicationsViewModel() }
     viewModel { com.example.pehelper.presentation.screen.CuratorStudentProfileViewModel() }
     viewModel { com.example.pehelper.presentation.screen.CuratorGroupsViewModel() }
+}
 }
