@@ -118,6 +118,20 @@ class MainActivity : ComponentActivity() {
                                 onBack = { navController.popBackStack() }
                             )
                         }
+                        composable("sport_lessons") {
+                            SportLessonsScreen(
+                                onProfileClick = {
+                                    navController.navigate("profile")
+                                },
+                                navController = navController
+                            )
+                        }
+                        composable("create_lesson") {
+                            CreateLessonScreen(
+                                onCreated = { navController.popBackStack() },
+                                onBack = { navController.popBackStack() }
+                            )
+                        }
                         composable("sports_event_detail/{eventId}") { backStackEntry ->
                             val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
                             SportsEventDetailScreen(

@@ -43,7 +43,7 @@ fun SplashScreen(
                     "Student" -> navController.navigate("student_pairs") {
                         popUpTo("splash") { inclusive = true }
                     }
-                    "Teacher" -> navController.navigate("teacher_pairs") {
+                    "Teacher" -> navController.navigate("sport_lessons") {
                         popUpTo("splash") { inclusive = true }
                     }
                     "SportsOrganizer" -> navController.navigate("sports_events") {
