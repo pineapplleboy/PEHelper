@@ -76,7 +76,7 @@ class AvatarViewModel : ViewModel(), KoinComponent {
         }
     }
     
-    fun uploadAvatar(context: Context, userId: String, imageUri: Uri, avatarId: String? = null) {
+    fun uploadAvatar(context: Context, userId: String, imageUri: Uri, avatarId: String? = null, onSuccess: (() -> Unit)? = null) {
         viewModelScope.launch {
             _avatarState.value = AvatarState.Loading
             
@@ -94,6 +94,7 @@ class AvatarViewModel : ViewModel(), KoinComponent {
                     if (response.isSuccessful) {
                         _avatarState.value = AvatarState.Success
                         avatarId?.let { loadAvatar(it) }
+                        onSuccess?.invoke()
                     } else {
                         _avatarState.value = AvatarState.Error("Ошибка загрузки: ${response.code()}")
                     }

@@ -18,6 +18,8 @@ import com.example.pehelper.R
 import com.example.pehelper.data.model.CuratorProfileModel
 import com.example.pehelper.presentation.component.AppButton
 import com.example.pehelper.presentation.component.AvatarPicker
+import com.example.pehelper.presentation.screen.ProfileViewModel
+import com.example.pehelper.presentation.screen.ProfileState
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -69,7 +71,8 @@ fun CuratorProfileScreen(
             is ProfileState.SuccessCurator -> {
                 CuratorProfileContent(
                     profile = currentState.profile,
-                    avatarViewModel = avatarViewModel
+                    avatarViewModel = avatarViewModel,
+                    profileViewModel = profileViewModel
                 )
             }
             else -> {}
@@ -80,7 +83,8 @@ fun CuratorProfileScreen(
 @Composable
 fun CuratorProfileContent(
     profile: CuratorProfileModel,
-    avatarViewModel: AvatarViewModel
+    avatarViewModel: AvatarViewModel,
+    profileViewModel: ProfileViewModel
 ) {
     var selectedAvatarUri by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
@@ -108,7 +112,15 @@ fun CuratorProfileContent(
             onAvatarSelected = { uri ->
                 selectedAvatarUri = uri
                 profile.id?.let { userId ->
-                    avatarViewModel.uploadAvatar(context, userId, uri, profile.avatarId)
+                    avatarViewModel.uploadAvatar(
+                        context = context, 
+                        userId = userId, 
+                        imageUri = uri, 
+                        avatarId = profile.avatarId,
+                        onSuccess = {
+                            profileViewModel.getCuratorProfile()
+                        }
+                    )
                 }
             }
         )

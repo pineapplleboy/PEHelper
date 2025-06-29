@@ -42,6 +42,10 @@ import com.example.pehelper.R
 import com.example.pehelper.data.model.StudentProfileModel
 import com.example.pehelper.presentation.component.AppButton
 import com.example.pehelper.presentation.component.AvatarPicker
+import com.example.pehelper.presentation.component.StudentCard
+import com.example.pehelper.presentation.component.StudentLessonCard
+import com.example.pehelper.presentation.component.StudentEventCard
+import com.example.pehelper.presentation.screen.ProfileViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -108,7 +112,8 @@ fun StudentProfileScreen(
                     onViewAllAttendances = {
                         navController.navigate("all_attendances")
                     },
-                    avatarViewModel = avatarViewModel
+                    avatarViewModel = avatarViewModel,
+                    profileViewModel = profileViewModel
                 )
             }
 
@@ -139,7 +144,8 @@ fun StudentProfileContent(
     profile: StudentProfileModel,
     onLogout: () -> Unit,
     onViewAllAttendances: () -> Unit,
-    avatarViewModel: AvatarViewModel
+    avatarViewModel: AvatarViewModel,
+    profileViewModel: ProfileViewModel
 ) {
     var selectedAvatarUri by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
@@ -169,7 +175,15 @@ fun StudentProfileContent(
             onAvatarSelected = { uri ->
                 selectedAvatarUri = uri
                 profile.id?.let { userId ->
-                    avatarViewModel.uploadAvatar(context, userId, uri, profile.avatarId)
+                    avatarViewModel.uploadAvatar(
+                        context = context, 
+                        userId = userId, 
+                        imageUri = uri, 
+                        avatarId = profile.avatarId,
+                        onSuccess = {
+                            profileViewModel.getStudentProfile()
+                        }
+                    )
                 }
             }
         )
