@@ -29,6 +29,5 @@ val viewModelModule = module {
     viewModel { StudentProfileViewModel() }
     viewModel { CuratorApplicationsViewModel() }
     viewModel { com.example.pehelper.presentation.screen.CuratorStudentProfileViewModel() }
-}
     viewModel { CuratorEventsViewModel() }
 }
