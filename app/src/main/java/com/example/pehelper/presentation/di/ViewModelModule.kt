@@ -10,9 +10,7 @@ import com.example.pehelper.presentation.screen.TeacherPairsViewModel
 import com.example.pehelper.presentation.viewmodel.LessonStudentsViewModel
 import com.example.pehelper.presentation.screen.StudentPairsViewModel
 import com.example.pehelper.presentation.screen.StudentEventDetailViewModel
-import com.example.pehelper.presentation.screen.StudentPairsViewModel
 import com.example.pehelper.presentation.screen.StudentProfileViewModel
-import com.example.pehelper.presentation.screen.TeacherPairsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -29,5 +27,4 @@ val viewModelModule = module {
     viewModel { StudentProfileViewModel() }
     viewModel { CuratorApplicationsViewModel() }
     viewModel { com.example.pehelper.presentation.screen.CuratorStudentProfileViewModel() }
-    viewModel { CuratorEventsViewModel() }
 }
