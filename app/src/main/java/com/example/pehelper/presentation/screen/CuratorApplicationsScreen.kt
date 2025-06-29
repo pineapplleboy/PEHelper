@@ -4,15 +4,12 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
@@ -34,7 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.pehelper.presentation.component.SportsEventCard
+import com.example.pehelper.presentation.component.SwipeableApplicationCard
 import com.example.pehelper.R
 import org.koin.androidx.compose.koinViewModel
 import androidx.navigation.NavController
@@ -44,20 +41,30 @@ import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CuratorEventsScreen(
+fun CuratorApplicationsScreen(
     onProfileClick: () -> Unit = {},
-    viewModel: CuratorEventsViewModel = koinViewModel(),
+    viewModel: CuratorApplicationsViewModel = koinViewModel(),
     navController: NavController? = null
 ) {
-    val eventsState by viewModel.eventsState.collectAsState()
+    val applicationsState by viewModel.applicationsState.collectAsState()
+    val actionState by viewModel.actionState.collectAsState()
     var isRefreshing by remember { mutableStateOf(false) }
+    var currentApplicationIndex by remember { mutableStateOf(0) }
 
     val swipeRefreshState = rememberSwipeRefreshState(
         isRefreshing = isRefreshing
     )
 
     LaunchedEffect(Unit) {
-        viewModel.getEvents()
+        viewModel.getApplications()
+    }
+
+    LaunchedEffect(actionState) {
+        if (actionState is ApplicationActionState.Success) {
+            viewModel.getApplications()
+            currentApplicationIndex = 0
+            viewModel.resetActionState()
+        }
     }
 
     Scaffold(
@@ -69,7 +76,7 @@ fun CuratorEventsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(id = R.string.curator_events),
+                    text = stringResource(id = R.string.curator_applications),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f)
@@ -89,7 +96,8 @@ fun CuratorEventsScreen(
             state = swipeRefreshState,
             onRefresh = {
                 isRefreshing = true
-                viewModel.getEvents()
+                currentApplicationIndex = 0
+                viewModel.getApplications()
             }
         ) {
             LaunchedEffect(isRefreshing) {
@@ -104,35 +112,58 @@ fun CuratorEventsScreen(
                     .fillMaxSize()
                     .padding(padding)
             ) {
-                when (val state = eventsState) {
-                    is EventsListState.Loading -> {
+                when (val state = applicationsState) {
+                    is ApplicationsListState.Loading -> {
                         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             Text(stringResource(id = R.string.loading))
                         }
                     }
-                    is EventsListState.Error -> {
+                    is ApplicationsListState.Error -> {
                         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             Text(stringResource(id = R.string.error_with_colon, state.error), color = MaterialTheme.colorScheme.error)
                         }
                     }
-                    is EventsListState.Success -> {
-                        if (state.events.isEmpty()) {
+                    is ApplicationsListState.Success -> {
+                        if (state.applications.isEmpty()) {
                             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Text(stringResource(id = R.string.no_events))
+                                Text(stringResource(id = R.string.no_applications))
+                            }
+                        } else if (currentApplicationIndex >= state.applications.size) {
+
+                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Text(
+                                    text = stringResource(id = R.string.all_applications_processed),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                )
                             }
                         } else {
-                            LazyColumn(
+                            val currentApplication = state.applications[currentApplicationIndex]
+                            Box(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(top = 8.dp, bottom = 16.dp),
-                                verticalArrangement = Arrangement.spacedBy(16.dp),
-                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
                             ) {
-                                items(state.events) { event ->
-                                    SportsEventCard(event = event, onClick = {
-                                        navController?.navigate("sports_event_detail/${event.id}")
-                                    })
-                                }
+                                SwipeableApplicationCard(
+                                    application = currentApplication,
+                                    onApprove = {
+                                        viewModel.approveApplication(
+                                            currentApplication.event.id,
+                                            currentApplication.profile.id ?: ""
+                                        )
+                                    },
+                                    onReject = {
+                                        viewModel.rejectApplication(
+                                            currentApplication.event.id,
+                                            currentApplication.profile.id ?: ""
+                                        )
+                                    },
+                                    isActionLoading = actionState is ApplicationActionState.Loading,
+                                    onProfileClick = { studentId ->
+                                        navController?.navigate("curator_student_profile/$studentId")
+                                    }
+                                )
                             }
                         }
                     }

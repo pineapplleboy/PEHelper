@@ -49,7 +49,7 @@ fun SplashScreen(
                     "SportsOrganizer" -> navController.navigate("sports_events") {
                         popUpTo("splash") { inclusive = true }
                     }
-                    "Curator" -> navController.navigate("curator_events") {
+                    "Curator" -> navController.navigate("curator_applications") {
                         popUpTo("splash") { inclusive = true }
                     }
                     else -> navController.navigate("auth") {

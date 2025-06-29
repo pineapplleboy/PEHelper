@@ -13,7 +13,8 @@ data class SportsEventModel(
     val description: String,
     val date: String,
     val faculty: Faculty?,
-    val attendances: List<Attendance>? = null
+    val attendances: List<Attendance>? = null,
+    val pendingAttendances: List<Attendance>? = null
 )
 
 data class AttendanceProfile(

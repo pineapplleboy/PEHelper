@@ -189,104 +189,105 @@ fun SubjectsBlock(subjects: List<Subject>) {
 
 @Composable
 fun CuratorProfileScreen(
-	navController: NavController,
-	authViewModel: AuthViewModel = koinViewModel(),
-	profileViewModel: ProfileViewModel = koinViewModel()
+    navController: NavController,
+    authViewModel: AuthViewModel = koinViewModel(),
+    profileViewModel: ProfileViewModel = koinViewModel()
 ) {
-	val state by profileViewModel.profileState.collectAsState()
+    val state by profileViewModel.profileState.collectAsState()
 
-	LaunchedEffect(Unit) {
-		profileViewModel.getCuratorProfile()
-	}
+    LaunchedEffect(Unit) {
+        profileViewModel.getCuratorProfile()
+    }
 
-	Box(
-		modifier = Modifier
-			.fillMaxSize()
-			.background(Color.White)
-	) {
-		when (val currentState = state) {
-			is ProfileState.Loading        -> {
-				CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-			}
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        when (val currentState = state) {
+            is ProfileState.Loading -> {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
 
-			is ProfileState.Error          -> {
-				Text(
-					text = currentState.error,
-					color = MaterialTheme.colorScheme.error,
-					modifier = Modifier.align(Alignment.Center)
-				)
-			}
+            is ProfileState.Error -> {
+                Text(
+                    text = currentState.error,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
 
-			is ProfileState.SuccessCurator -> {
-				CuratorProfileContent(
-					profile = currentState.profile,
-					onLogout = {
-						authViewModel.logout()
-						navController.navigate("auth") {
-							popUpTo("curator_profile") { inclusive = true }
-						}
-					}
-				)
-			}
+            is ProfileState.SuccessCurator -> {
+                CuratorProfileContent(
+                    profile = currentState.profile,
+                    onLogout = {
+                        authViewModel.logout()
+                        navController.navigate("auth") {
+                            popUpTo("curator_profile") { inclusive = true }
+                        }
+                    }
+                )
+            }
 
-			else                           -> {}
-		}
-	}
+            else -> {}
+        }
+    }
 }
 
 @Composable
 fun CuratorProfileContent(profile: CuratorProfileModel, onLogout: () -> Unit) {
-	Column(
-		modifier = Modifier
-			.fillMaxSize()
-			.background(Color.White)
-			.padding(horizontal = 24.dp),
-		horizontalAlignment = Alignment.CenterHorizontally,
-		verticalArrangement = Arrangement.Top
-	) {
-		TitleField(
-			loginText = stringResource(R.string.profile_curator_title),
-			accessText = stringResource(R.string.profile_curator_access),
-			modifier = Modifier.padding(top = 0.dp, bottom = 0.dp),
-		)
-		Spacer(modifier = Modifier.height(32.dp))
-		ProfileInfoBlock(label = stringResource(R.string.full_name), value = profile.fullName)
-		ProfileInfoBlock(label = stringResource(R.string.email), value = profile.email)
-		if (!profile.subjects.isNullOrEmpty()) {
-			SubjectsBlock(subjects = profile.subjects)
-		}
-		if (!profile.faculties.isNullOrEmpty()) {
-			FacultiesBlock(faculties = profile.faculties)
-		}
-		Spacer(modifier = Modifier.height(32.dp))
-		AppButton(text = stringResource(R.string.logout), onClick = onLogout)
-	}
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(horizontal = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
+        Spacer(modifier = Modifier.height(80.dp))
+        TitleField(
+            loginText = stringResource(R.string.profile_curator_title),
+            accessText = stringResource(R.string.profile_curator_access),
+            modifier = Modifier.padding(top = 0.dp, bottom = 0.dp)
+        )
+        Spacer(modifier = Modifier.height(32.dp))
+        ProfileInfoBlock(label = stringResource(R.string.full_name), value = profile.fullName)
+        ProfileInfoBlock(label = stringResource(R.string.email), value = profile.email)
+        if (!profile.subjects.isNullOrEmpty()) {
+            SubjectsBlock(subjects = profile.subjects)
+        }
+        if (!profile.faculties.isNullOrEmpty()) {
+            FacultiesBlock(faculties = profile.faculties)
+        }
+        Spacer(modifier = Modifier.height(32.dp))
+        AppButton(text = stringResource(R.string.logout), onClick = onLogout)
+    }
 }
 
 @Composable
 fun FacultiesBlock(faculties: List<Faculty>) {
-	Box(
-		modifier = Modifier
-			.fillMaxWidth()
-			.padding(vertical = 8.dp)
-			.clip(RoundedCornerShape(10.dp))
-			.background(colorResource(R.color.light_gray))
-			.padding(16.dp)
-	) {
-		Column {
-			Text(
-				text = stringResource(R.string.faculties),
-				style = MaterialTheme.typography.labelSmall,
-				color = colorResource(R.color.gray)
-			)
-			Spacer(modifier = Modifier.height(4.dp))
-			faculties.forEach {
-				Text(
-					text = it.name ?: "",
-					style = MaterialTheme.typography.bodyLarge,
-					color = colorResource(R.color.light_black)
-				)
-			}
-		}
-	}
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(colorResource(R.color.light_gray))
+            .padding(16.dp)
+    ) {
+        Column {
+            Text(
+                text = stringResource(R.string.faculties),
+                style = MaterialTheme.typography.labelSmall,
+                color = colorResource(R.color.gray)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            faculties.forEach {
+                Text(
+                    text = it.name ?: "",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = colorResource(R.color.light_black)
+                )
+            }
+        }
+    }
 } 

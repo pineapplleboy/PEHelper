@@ -142,6 +142,7 @@ fun StudentEventDetailScreen(
 
 					is StudentEventDetailState.Success -> {
 						val event = state.event
+						val applicationStatus = state.applicationStatus
 						Column(
 							modifier = Modifier
 								.fillMaxSize()
@@ -193,7 +194,7 @@ fun StudentEventDetailScreen(
 										)
 										Spacer(modifier = Modifier.width(8.dp))
 										Text(
-											text = event.faculty.name ?: "Факультет не указан",
+											text = event.faculty?.name ?: "Факультет не указан",
 											fontSize = 16.sp,
 											fontWeight = FontWeight.Medium,
 											color = Color(0xFF666666)
@@ -237,49 +238,19 @@ fun StudentEventDetailScreen(
 
 									Spacer(modifier = Modifier.height(16.dp))
 
-									event.status?.let { status ->
-										Row(verticalAlignment = Alignment.CenterVertically) {
-											Text(
-												text = stringResource(id = R.string.status) + ": ",
-												fontSize = 16.sp,
-												fontWeight = FontWeight.Medium,
-												color = Color(0xFF666666)
-											)
-											Text(
-												text = getStatusText(status),
-												fontSize = 16.sp,
-												fontWeight = FontWeight.Medium,
-												color = getStatusColor(status)
-											)
-										}
-
-										Spacer(modifier = Modifier.height(16.dp))
-									}
-
-									val shouldShowButton = shouldShowButton(event.status)
-									if (shouldShowButton) {
+									if (applicationStatus != "Credited") {
 										Button(
 											onClick = {
-												when (event.status) {
-													"DidNotVisit" -> {
-														viewModel.createApplication(event.id)
-													}
-													"Pending" -> {
-														viewModel.deleteApplication(event.id)
-													}
-													else -> {
-														// Никаких действий для других статусов
-													}
-												}
+												viewModel.createApplication(event.id)
 											},
 											modifier = Modifier.fillMaxWidth(),
 											colors = ButtonDefaults.buttonColors(
-												containerColor = if (event.status?.lowercase() == "pending") Color(0xFFE57373) else Color(0xFF4CAF50)
+												containerColor = Color(0xFF4CAF50)
 											),
 											shape = RoundedCornerShape(12.dp)
 										) {
 											Text(
-												text = getButtonText(event.status),
+												text = stringResource(id = R.string.mark_attendance),
 												fontSize = 16.sp,
 												fontWeight = FontWeight.Medium,
 												color = Color.White
@@ -329,45 +300,5 @@ private fun formatDate(dateString: String): String {
 		dateTime.format(formatter)
 	} catch (e: Exception) {
 		"Дата не указана"
-	}
-}
-
-@Composable
-private fun getStatusText(status: String): String {
-	return when (status.lowercase()) {
-		"pending" -> stringResource(id = R.string.status_pending_text)
-		"accepted" -> stringResource(id = R.string.status_accepted_text)
-		"declined" -> stringResource(id = R.string.status_declined_text)
-		"didnotvisit" -> stringResource(id = R.string.status_did_not_visit_text)
-		else -> status
-	}
-}
-
-@Composable
-private fun getStatusColor(status: String): Color {
-	return when (status.lowercase()) {
-		"pending" -> Color(0xFFFF9800)
-		"accepted" -> Color(0xFF4CAF50)
-		"declined" -> Color(0xFFF44336)
-		"didnotvisit" -> Color(0xFF9E9E9E)
-		else -> Color(0xFF666666)
-	}
-}
-
-@Composable
-private fun getButtonText(status: String?): String {
-	return when (status?.lowercase()) {
-		"didnotvisit" -> stringResource(id = R.string.mark_attendance)
-		"pending" -> stringResource(id = R.string.cancel_attendance)
-		else -> stringResource(id = R.string.mark_attendance)
-	}
-}
-
-@Composable
-private fun shouldShowButton(status: String?): Boolean {
-	return when (status?.lowercase()) {
-		"didnotvisit", "pending" -> true
-		"accepted", "declined" -> false
-		else -> true
 	}
 } 

@@ -2,7 +2,7 @@ package com.example.pehelper.presentation.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.pehelper.data.model.StudentEventModel
+import com.example.pehelper.data.model.SportsEventModel
 import com.example.pehelper.data.network.PEAPI
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +13,7 @@ import org.koin.core.component.inject
 
 sealed class StudentEventDetailState {
 	data object Loading : StudentEventDetailState()
-	data class Success(val event: StudentEventModel) : StudentEventDetailState()
+	data class Success(val event: SportsEventModel, val applicationStatus: String?) : StudentEventDetailState()
 	data class Error(val error: String) : StudentEventDetailState()
 }
 
@@ -34,16 +34,14 @@ class StudentEventDetailViewModel : ViewModel(), KoinComponent {
 				val event = response.events.find { it.id == eventId }
 				
 				if (event != null) {
+					var applicationStatus: String? = null
 					try {
 						val applicationResponse = api.getStudentApplication(eventId)
-						val eventWithStatus = event.copy(
-							isApplied = applicationResponse.isApplied,
-							status = applicationResponse.status
-						)
-						_eventState.value = StudentEventDetailState.Success(eventWithStatus)
+						applicationStatus = applicationResponse.status
 					} catch (e: Exception) {
-						_eventState.value = StudentEventDetailState.Success(event)
 					}
+					
+					_eventState.value = StudentEventDetailState.Success(event, applicationStatus)
 				} else {
 					_eventState.value = StudentEventDetailState.Error("Мероприятие не найдено")
 				}

@@ -134,6 +134,29 @@ fun SportsEventDetailScreen(
                     InfoBlock(label = stringResource(id = R.string.faculty), value = event.faculty?.name ?: "-")
                     InfoBlock(label = stringResource(id = R.string.description), value = event.description)
                     Spacer(modifier = Modifier.height(32.dp))
+
+                    if (!event.pendingAttendances.isNullOrEmpty()) {
+                        Text(
+                            text = stringResource(id = R.string.pending_applications),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            color = colorResource(id = R.color.black),
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            event.pendingAttendances.forEach { attendance ->
+                                StudentAttendanceCard(
+                                    profile = attendance.profile,
+                                    status = attendance.status,
+                                    onAccept = { viewModel.updateAttendanceStatus(event.id, attendance.profile.id ?: return@StudentAttendanceCard, "Accepted") },
+                                    onDecline = { viewModel.updateAttendanceStatus(event.id, attendance.profile.id ?: return@StudentAttendanceCard, "Declined") },
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
+
                     Text(
                         text = stringResource(id = R.string.students_attendance_title),
                         fontWeight = FontWeight.Bold,

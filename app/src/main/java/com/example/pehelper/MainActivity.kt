@@ -23,7 +23,6 @@ import com.example.pehelper.presentation.screen.CuratorProfileScreen
 import com.example.pehelper.presentation.screen.ProfileScreen
 import com.example.pehelper.presentation.screen.SplashScreen
 import com.example.pehelper.presentation.screen.SportsOrganizerProfileScreen
-import com.example.pehelper.presentation.screen.StudentProfileScreen
 import com.example.pehelper.presentation.screen.SportsEventsScreen
 import com.example.pehelper.presentation.screen.CreateSportsEventScreen
 import com.example.pehelper.presentation.screen.LessonStudentsScreen
@@ -32,8 +31,10 @@ import com.example.pehelper.presentation.screen.SportsEventDetailScreen
 import com.example.pehelper.presentation.screen.StudentPairsScreen
 import com.example.pehelper.presentation.screen.AllAttendancesScreen
 import com.example.pehelper.presentation.screen.StudentEventDetailScreen
-import com.example.pehelper.presentation.screen.CuratorEventsScreen
+import com.example.pehelper.presentation.screen.StudentProfileScreen
+import com.example.pehelper.presentation.screen.CuratorApplicationsScreen
 import com.example.pehelper.ui.theme.PEHelperTheme
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -152,12 +153,35 @@ class MainActivity : ComponentActivity() {
                                 onBackClick = { navController.popBackStack() }
                             )
                         }
-                        composable("curator_events") {
-                            CuratorEventsScreen(
+                        composable("curator_applications") {
+                            CuratorApplicationsScreen(
                                 onProfileClick = {
                                     navController.navigate("curator_profile")
                                 },
                                 navController = navController
+                            )
+                        }
+                        composable(
+                            "curator_student_profile/{studentId}",
+                            arguments = listOf(navArgument("studentId") { type = NavType.StringType })
+                        ) { backStackEntry ->
+                            val studentId = backStackEntry.arguments?.getString("studentId") ?: ""
+                            com.example.pehelper.presentation.screen.CuratorStudentProfileScreen(
+                                studentId = studentId,
+                                onBack = { navController.popBackStack() },
+                                onViewAllAttendances = { studentIdForAttendances ->
+                                    navController.navigate("curator_student_attendances/$studentIdForAttendances")
+                                }
+                            )
+                        }
+                        composable(
+                            "curator_student_attendances/{studentId}",
+                            arguments = listOf(navArgument("studentId") { type = NavType.StringType })
+                        ) { backStackEntry ->
+                            val studentId = backStackEntry.arguments?.getString("studentId") ?: ""
+                            com.example.pehelper.presentation.screen.CuratorStudentAttendancesScreen(
+                                studentId = studentId,
+                                onBack = { navController.popBackStack() }
                             )
                         }
                     }
