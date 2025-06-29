@@ -89,7 +89,7 @@ fun AuthScreen(
             is AuthState.Success -> {
                 LaunchedEffect(currentState) {
                     when (currentState.role) {
-                        "Student" -> navController.navigate("student_profile") {
+                        "Student" -> navController.navigate("student_pairs") {
                             popUpTo("auth") { inclusive = true }
                         }
 
