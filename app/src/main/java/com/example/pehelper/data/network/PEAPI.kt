@@ -1,5 +1,6 @@
 package com.example.pehelper.data.network
 
+import com.example.pehelper.data.model.AttendanceResponse
 import com.example.pehelper.data.model.AuthTokensModel
 import com.example.pehelper.data.model.CuratorProfileModel
 import com.example.pehelper.data.model.LoginUserModel
@@ -112,6 +113,25 @@ interface PEAPI {
 
     @GET("/api/avatar")
     suspend fun getAvatar(@Query("id") userId: String): retrofit2.Response<okhttp3.ResponseBody>
+
+    @GET("/api/teacher/attendances/pending/{pairId}")
+    suspend fun getPendingAttendances(@Path("pairId") pairId: String): AttendanceResponse
+
+    @GET("/api/teacher/attendances/solved/{pairId}")
+    suspend fun getSolvedAttendances(@Path("pairId") pairId: String): AttendanceResponse
+
+    @PUT("/api/teacher/pairs/{pairId}")
+    suspend fun acceptAttendance(
+        @Path("pairId") pairId: String,
+        @Query("userId") userId: String,
+        @Query("classesAmount") classesAmount: Int = 1
+    )
+
+    @DELETE("/api/teacher/pairs/{pairId}")
+    suspend fun declineAttendance(
+        @Path("pairId") pairId: String,
+        @Query("userId") userId: String
+    )
 }
 
 data class SessionResponse(
