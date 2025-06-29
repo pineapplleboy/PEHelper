@@ -32,6 +32,7 @@ import com.example.pehelper.presentation.screen.SportsEventDetailScreen
 import com.example.pehelper.presentation.screen.StudentPairsScreen
 import com.example.pehelper.presentation.screen.AllAttendancesScreen
 import com.example.pehelper.presentation.screen.StudentEventDetailScreen
+import com.example.pehelper.presentation.screen.CuratorEventsScreen
 import com.example.pehelper.ui.theme.PEHelperTheme
 
 class MainActivity : ComponentActivity() {
@@ -135,6 +136,14 @@ class MainActivity : ComponentActivity() {
                             StudentEventDetailScreen(
                                 eventId = eventId,
                                 onBackClick = { navController.popBackStack() }
+                            )
+                        }
+                        composable("curator_events") {
+                            CuratorEventsScreen(
+                                onProfileClick = {
+                                    navController.navigate("curator_profile")
+                                },
+                                navController = navController
                             )
                         }
                     }

@@ -97,4 +97,5 @@
     <string name="attendance_status_declined">Отклонено</string>
     <string name="attendance_status_did_not_visit">Не посещал</string>
     <string name="event_details">Детали мероприятия</string>
+    <string name="curator_events">Мероприятия</string>
 </resources>
